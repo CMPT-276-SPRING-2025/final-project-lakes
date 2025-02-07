@@ -20,3 +20,5 @@ With a clean and intuitive UI built using ShadCN UI, HireWise makes the job sear
 ## AI Declaration Forms of each team member:
 
 [M0_AI_Declaration_Alexander_Potiagalov_301586871](./docs/M0_AI_Declaration_Alexander_Potiagalov_301586871.pdf)
+
+[M0_AI_Declaration_Mohamad_Refaai_301603558](./docs/M0_AI_Declaration_Mohamad_Refaai_301603558.pdf)
