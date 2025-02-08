@@ -24,3 +24,5 @@ With a clean and intuitive UI built using ShadCN UI, ResuMate makes the job sear
 [M0_AI_Declaration_Mohamad_Refaai_301603558](./docs/M0_AI_Declaration_Mohamad_Refaai_301603558.pdf)
 
 [M0_AI_Declaration_Manan_Mehta_301581948](./docs/M0_AI_Declaration_Manan_Mehta_301581948.pdf)
+
+[M0_AI_Declaration_Khalid_Karim_301581950](./docs/M0_AI_Declaration_Khalid_Karim_301581950.pdf)
