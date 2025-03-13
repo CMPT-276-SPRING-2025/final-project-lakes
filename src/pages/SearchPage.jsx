@@ -83,7 +83,7 @@ export default function JobSearchPage() {
 
       {/* Job Results */}
       <div className="p-4">
-        <p className="font-bold">Job Results :</p>
+        <p className="font-bold">Current Pos :</p>
         {loading ? (
           <p className="text-gray-600">Loading jobs...</p>
         ) : jobResults.length > 0 ? (
@@ -92,9 +92,6 @@ export default function JobSearchPage() {
               key={job.job_id}
               className="my-2 p-3 flex gap-2 bg-gray-200 rounded-md"
             >
-              <div className="text-lg font-bold text-gray-600">
-                {job.job_id}
-              </div>
               <div>
                 <p className="font-bold">{job.job_title}</p>
                 <p className="text-sm text-gray-600">
