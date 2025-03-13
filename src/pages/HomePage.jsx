@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import ResumeButton from "../components/resumebutton";
 
 const HomePage = () => {
+  // Callback function to handle parsed resume text
+  const handleResumeParsed = (text) => {};
+
   return (
     <div className="min-h-screen flex flex-col items-center text-center bg-gray-100 p-6">
       {/* Header */}
@@ -11,6 +15,9 @@ const HomePage = () => {
       <p className="text-gray-600 mt-2 text-lg">
         Find jobs, enhance your resume, and apply with confidence.
       </p>
+
+      {/* Resume Upload Button */}
+      <ResumeButton onResumeParsed={handleResumeParsed} />
 
       {/* Navigation Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-8">

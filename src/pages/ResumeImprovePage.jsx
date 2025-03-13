@@ -175,7 +175,7 @@ const ResumeImprovePage = () => {
                 Resume Generator
               </h2>
               <div className="h-60 bg-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-lg">
-                Coming Soon...
+                Ready to Generate
               </div>
             </div>
             <div className="bg-indigo-100 p-8 rounded-xl shadow-lg text-center hover:shadow-2xl transition-all">
@@ -183,7 +183,7 @@ const ResumeImprovePage = () => {
                 Cover Letter Generator
               </h2>
               <div className="h-60 bg-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-lg">
-                Coming Soon...
+                Ready to generate
               </div>
             </div>
           </div>
