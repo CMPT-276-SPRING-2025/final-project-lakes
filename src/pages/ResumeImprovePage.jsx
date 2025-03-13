@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ResumeButton from "../components/ResumeButton.jsx"; // Import the ResumeButton component
 
 const ResumeImprovePage = () => {
   const [jobDetails, setJobDetails] = useState({
@@ -7,7 +8,7 @@ const ResumeImprovePage = () => {
     location: "",
     description: "",
   });
-  const [resumeFile, setResumeFile] = useState(null);
+  const [resumeText, setResumeText] = useState(""); // Store extracted resume text
   const [loading, setLoading] = useState(false);
   const [generatedText, setGeneratedText] = useState("");
 
@@ -16,63 +17,79 @@ const ResumeImprovePage = () => {
     setJobDetails({ ...jobDetails, [name]: value });
   };
 
-  const handleFileUpload = (e) => {
-    setResumeFile(e.target.files[0]);
+  // Function to update resume text when extracted from ResumeButton
+  const handleResumeParsed = (extractedText) => {
+    if (!resumeText) {
+      // Only update if it's empty to prevent duplicates
+      setResumeText(extractedText);
+      console.log("Extracted Resume Text:", extractedText);
+    }
   };
 
   const generateResumeAndCoverLetter = async () => {
-    if (!resumeFile || !jobDetails.description) {
+    if (!resumeText.trim() || !jobDetails.description.trim()) {
       alert("Please upload a resume and enter a job description.");
       return;
     }
 
     setLoading(true);
 
-    // Read Resume File as Text
-    const reader = new FileReader();
-    reader.readAsText(resumeFile);
-    reader.onload = async () => {
-      const resumeText = reader.result;
+    try {
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer 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`, // Replace with environment variable
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are an AI assistant specialized in improving resumes and cover letters.",
+              },
+              {
+                role: "user",
+                content: `
+              Below is a resume and a job description. 
+  
+              Extract relevant key skills and keywords from both. 
+              Then, rewrite the resume to better match the job description while keeping the original experience intact.
+              Finally, generate a professional cover letter tailored for the job.
+  
+              ### Resume:
+              ${resumeText}
+  
+              ### Job Description:
+              ${jobDetails.description}
+  
+              **Output should be in this format:**
+              - **Optimized Resume:** (formatted resume)
+              - **Cover Letter:** (formatted cover letter)
+            `,
+              },
+            ],
+          }),
+        }
+      );
 
-      try {
-        const response = await fetch(
-          "https://api.openai.com/v1/chat/completions",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer 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`, // ⚠️ SECURITY RISK!
-            },
-            body: JSON.stringify({
-              model: "gpt-4",
-              messages: [
-                {
-                  role: "system",
-                  content:
-                    "You are an AI that helps create optimized resumes and cover letters.",
-                },
-                {
-                  role: "user",
-                  content: `Here is a resume:\n\n${resumeText}\n\nHere is a job description:\n\n${jobDetails.description}\n\n1. Extract key skills and keywords from both. 
-                2. Rewrite the resume to match the job description while keeping the original experience intact.
-                3. Generate a professional cover letter tailored for the job.`,
-                },
-              ],
-            }),
-          }
-        );
-
-        const data = await response.json();
+      const data = await response.json();
+      if (data.choices && data.choices[0].message) {
         setGeneratedText(data.choices[0].message.content);
-      } catch (error) {
-        console.error("Error generating resume & cover letter:", error);
-        alert(
-          "Failed to generate resume & cover letter. Check console for details."
-        );
+      } else {
+        throw new Error("Invalid response from OpenAI");
       }
+    } catch (error) {
+      console.error("Error generating resume & cover letter:", error);
+      alert(
+        "Failed to generate resume & cover letter. Check console for details."
+      );
+    }
 
-      setLoading(false);
-    };
+    setLoading(false);
   };
 
   return (
@@ -92,22 +109,8 @@ const ResumeImprovePage = () => {
             <h2 className="text-2xl font-semibold mb-4 text-gray-700">
               Resume Upload:
             </h2>
-            <label className="flex flex-col items-center justify-center w-full p-6 border-2 border-dashed border-blue-500 rounded-xl bg-blue-100 hover:bg-blue-200 cursor-pointer">
-              <span className="text-lg font-medium text-gray-700">
-                Click to Upload 📂
-              </span>
-              <input
-                type="file"
-                className="hidden"
-                onChange={handleFileUpload}
-              />
-            </label>
-            {resumeFile && (
-              <p className="text-sm mt-2 text-gray-600 font-medium">
-                Uploaded: {resumeFile.name}
-              </p>
-            )}
-
+            <ResumeButton onResumeParsed={handleResumeParsed} />{" "}
+            {/* Use ResumeButton */}
             {/* Job Details Form */}
             <div className="mt-6 bg-gray-100 p-6 rounded-xl shadow-lg">
               <h3 className="text-xl font-semibold mb-4 text-gray-700">
@@ -183,7 +186,7 @@ const ResumeImprovePage = () => {
                 Cover Letter Generator
               </h2>
               <div className="h-60 bg-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-lg">
-                Ready to generate
+                Ready to Generate
               </div>
             </div>
           </div>
