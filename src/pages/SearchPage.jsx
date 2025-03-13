@@ -17,31 +17,30 @@ export default function JobSearchPage() {
     company: "",
   });
   const [jobResults, setJobResults] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("software developer");
   const [loading, setLoading] = useState(false);
 
-  const fetchJobs = async () => {
-    setLoading(true);
-    try {
-      const url = `https://jsearch.p.rapidapi.com/search?query=${searchQuery}%20jobs%20in%20${filters.location}&page=1&num_pages=1&country=us&date_posted=all`;
-      const response = await fetch(url, options);
-      const result = await response.json();
-      setJobResults(result.data || []);
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
+      try {
+        const searchQuery = filters.company || "software developer"; // Default query
+        const url = `https://jsearch.p.rapidapi.com/search?query=${searchQuery}%20jobs%20in%20${filters.location}&page=1&num_pages=1&country=us&date_posted=all`;
+        const response = await fetch(url, options);
+        const result = await response.json();
+        setJobResults(result.data || []);
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchJobs();
   }, [filters]); // Fetch new jobs when filters change
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
-    if (name === "company") setSearchQuery(value);
   };
 
   return (
