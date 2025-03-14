@@ -334,7 +334,7 @@ const ResumeImprovePage = () => {
             <h2 className="text-2xl font-semibold mb-4 text-indigo-700">
               Resume Generator
             </h2>
-            <div className="bg-white p-6 rounded-lg shadow-md text-gray-800 text-left">
+            <div className="bg-white p-6 rounded-lg shadow-md text-gray-800 text-left max-h-96 overflow-y-auto resize-y">
               <pre className="whitespace-pre-wrap">
                 {generatedResume || "Your generated resume will appear here..."}
               </pre>
@@ -365,7 +365,7 @@ const ResumeImprovePage = () => {
             <h2 className="text-2xl font-semibold mb-4 text-indigo-700">
               Cover Letter Generator
             </h2>
-            <div className="bg-white p-6 rounded-lg shadow-md text-gray-800 text-left">
+            <div className="bg-white p-6 rounded-lg shadow-md text-gray-800 text-left max-h-96 overflow-y-auto resize-y">
               <pre className="whitespace-pre-wrap">
                 {generatedCoverLetter ||
                   "Your generated cover letter will appear here..."}
