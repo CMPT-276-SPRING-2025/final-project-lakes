@@ -37,7 +37,9 @@ const ResumeButton = ({ onResumeParsed }) => {
           console.log("Extracted PDF Text:", extractedText);
 
           // Pass the extracted text to the parent component
-          onResumeParsed(extractedText);
+          onResumeParsed(extractedText, file.name);
+
+          event.target.value = "";
         };
         reader.readAsArrayBuffer(file);
       } catch (error) {
