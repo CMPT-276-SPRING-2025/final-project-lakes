@@ -14,17 +14,17 @@ const ResumeImprovePage = () => {
   const [generatedCoverLetter, setGeneratedCoverLetter] = useState("");
   const [resumeFeedback, setResumeFeedback] = useState("");
   const [coverLetterFeedback, setCoverLetterFeedback] = useState("");
+  const [uploadedFileName, setUploadedFileName] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setJobDetails({ ...jobDetails, [name]: value });
   };
 
-  const handleResumeParsed = (extractedText) => {
-    if (!resumeText) {
-      setResumeText(extractedText);
-      console.log("Extracted Resume Text:", extractedText);
-    }
+  const handleResumeParsed = (extractedText, fileName) => {
+    setResumeText(extractedText);
+    setUploadedFileName(fileName);
+    console.log("Extracted Resume Text:", extractedText);
   };
 
   const generateResumeAndCoverLetter = async () => {
@@ -280,6 +280,12 @@ const ResumeImprovePage = () => {
               Resume Upload:
             </h2>
             <ResumeButton onResumeParsed={handleResumeParsed} />
+            {uploadedFileName && (
+              <p className="mt-2 text-sm text-gray-600">
+                Uploaded File:{" "}
+                <span className="font-medium">{uploadedFileName}</span>
+              </p>
+            )}
 
             {/* Job Details Form */}
             <div className="mt-6 bg-gray-100 p-6 rounded-xl shadow-lg">
