@@ -13,6 +13,7 @@ import MatchCheckPage from "./pages/MatchCheckPage";
 import ResumeImprovePage from "./pages/ResumeImprovePage";
 import JobRecommendPage from "./pages/JobRecommendPage";
 import InterviewProcess from "./pages/InterviewProcess";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 // ✅ Correctly create the router using `createBrowserRouter`
 const router = createBrowserRouter(
@@ -30,7 +31,11 @@ const router = createBrowserRouter(
 );
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  );
 };
 
 export default App;
