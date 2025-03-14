@@ -30,6 +30,7 @@ const HomePage = () => {
         />
         <NavItem to="/resume-improve" text="4. Improve My Resume" emoji="✍️" />
         <NavItem to="/job-recommend" text="5. Job Recommender" emoji="🤖" />
+        <NavItem to="/interview-process" text="6. Interview Process" emoji="📞" />
       </div>
     </div>
   );
