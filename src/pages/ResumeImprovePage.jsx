@@ -111,6 +111,157 @@ const ResumeImprovePage = () => {
     setLoading(false);
   };
 
+  const regenerateResume = async () => {
+    if (!resumeText.trim() || !jobDetails.description.trim()) {
+      alert("Please upload a resume and enter a job description.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer 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`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a professional career coach who creates ATS-optimized resumes tailored to job descriptions. You have a client who needs help optimizing their resume for a job application.",
+              },
+              {
+                role: "user",
+                content: `
+              **Optimize the resume based on the provided job description and feedback.**
+
+              **Resume:**
+              ${resumeText}
+
+              **Job Description:**
+              ${jobDetails.description}
+
+              **Feedback:**
+              ${resumeFeedback}
+
+              **Requirements:**
+              - Extract key skills and keywords.
+              - Rewrite the resume to be ATS-friendly while preserving professional experience.
+              - Incorporate feedback provided by the user.
+              - Format for readability and conciseness.
+
+              **Output Format:**
+              **Optimized Resume:**\n<Formatted Resume Content>\n
+            `,
+              },
+            ],
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.choices && data.choices[0].message) {
+        const output = data.choices[0].message.content;
+
+        // Use regex to extract resume
+        const resumeMatch = output.match(/\*\*Optimized Resume:\*\*(.*)/s);
+
+        setGeneratedResume(
+          resumeMatch ? resumeMatch[1].trim() : "Error parsing resume..."
+        );
+      } else {
+        throw new Error("Invalid response from OpenAI");
+      }
+    } catch (error) {
+      console.error("Error regenerating resume:", error);
+      alert("Failed to regenerate resume. Check console for details.");
+    }
+
+    setLoading(false);
+  };
+
+  const regenerateCoverLetter = async () => {
+    if (!resumeText.trim() || !jobDetails.description.trim()) {
+      alert("Please upload a resume and enter a job description.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer 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`, // Replace with environment variable
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a professional career coach who creates compelling cover letters tailored to job descriptions. You have a client who needs help writing a cover letter for a job application.",
+              },
+              {
+                role: "user",
+                content: `
+              **Generate a tailored cover letter based on the provided job description and feedback.**
+
+              **Resume:**
+              ${resumeText}
+
+              **Job Description:**
+              ${jobDetails.description}
+
+              **Feedback:**
+              ${coverLetterFeedback}
+
+              **Requirements:**
+              - Generate a well-structured, formal, and engaging cover letter.
+              - Incorporate feedback provided by the user.
+              - Format for readability and conciseness.
+
+              **Output Format:**
+              **Cover Letter:**\n<Formatted Cover Letter Content>\n
+            `,
+              },
+            ],
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.choices && data.choices[0].message) {
+        const output = data.choices[0].message.content;
+
+        // Use regex to extract cover letter
+        const coverLetterMatch = output.match(/\*\*Cover Letter:\*\*(.*)/s);
+
+        setGeneratedCoverLetter(
+          coverLetterMatch
+            ? coverLetterMatch[1].trim()
+            : "Error parsing cover letter..."
+        );
+      } else {
+        throw new Error("Invalid response from OpenAI");
+      }
+    } catch (error) {
+      console.error("Error regenerating cover letter:", error);
+      alert("Failed to regenerate cover letter. Check console for details.");
+    }
+
+    setLoading(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 p-10 flex flex-col items-center justify-center text-white">
       <div className="w-full max-w-6xl bg-white shadow-2xl rounded-2xl p-10 text-gray-900">
@@ -200,8 +351,12 @@ const ResumeImprovePage = () => {
               placeholder="Provide feedback..."
             />
 
-            <button className="mt-4 px-6 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition">
-              Regenerate Resume
+            <button
+              onClick={regenerateResume}
+              className="mt-4 px-6 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition"
+              disabled={loading}
+            >
+              {loading ? "Generating..." : "Regenerate Resume"}
             </button>
           </div>
 
@@ -228,8 +383,12 @@ const ResumeImprovePage = () => {
               placeholder="Provide feedback..."
             />
 
-            <button className="mt-4 px-6 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition">
-              Regenerate Cover Letter
+            <button
+              onClick={regenerateCoverLetter}
+              className="mt-4 px-6 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition"
+              disabled={loading}
+            >
+              {loading ? "Generating..." : "Regenerate Cover Letter"}
             </button>
           </div>
         </div>
