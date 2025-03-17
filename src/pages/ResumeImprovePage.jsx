@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ResumeButton from "../components/ResumeButton.jsx"; // Import the ResumeButton component
+import ResumeButton from "../components/resumebutton.jsx"; // Import the ResumeButton component
 
 const ResumeImprovePage = () => {
   const [jobDetails, setJobDetails] = useState({
