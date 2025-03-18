@@ -511,7 +511,11 @@ const ResumeTopImage = styled.img`
   right: 40px;
   width: 250px;
   height: auto;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px
+    ${(props) =>
+      props.theme === "dark"
+        ? "rgba(252, 250, 250, 0.6)"
+        : "rgba(0, 0, 0, 0.6)"};
   border-radius: 4px;
   background-color: #fff;
   animation: ${fadeIn} 1s ease-in-out, ${float} 6s ease-in-out infinite;
@@ -536,7 +540,11 @@ const ResumeMiddleImage = styled.img`
   right: 120px;
   width: 270px;
   height: auto;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px
+    ${(props) =>
+      props.theme === "dark"
+        ? "rgba(252, 250, 250, 0.6)"
+        : "rgba(0, 0, 0, 0.6)"};
   border-radius: 4px;
   background-color: #fff;
   animation: ${fadeIn} 1s ease-in-out, ${floatMiddle} 7s ease-in-out infinite;
@@ -561,7 +569,11 @@ const ResumeBottomImage = styled.img`
   right: 180px;
   width: 280px;
   height: auto;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px
+    ${(props) =>
+      props.theme === "dark"
+        ? "rgba(252, 250, 250, 0.6)"
+        : "rgba(0, 0, 0, 0.6)"};
   border-radius: 4px;
   background-color: #fff;
   animation: ${fadeIn} 1s ease-in-out, ${floatBottom} 8s ease-in-out infinite;
@@ -667,9 +679,21 @@ const HomePage = () => {
         </LeftSection>
 
         <RightSection>
-          <ResumeTopImage src={resumeImage1} alt="Resume Template 1" />
-          <ResumeMiddleImage src={resumeImage2} alt="Resume Template 2" />
-          <ResumeBottomImage src={resumeImage3} alt="Resume Template 3" />
+          <ResumeTopImage
+            theme={theme}
+            src={resumeImage1}
+            alt="Resume Template 1"
+          />
+          <ResumeMiddleImage
+            theme={theme}
+            src={resumeImage2}
+            alt="Resume Template 2"
+          />
+          <ResumeBottomImage
+            theme={theme}
+            src={resumeImage3}
+            alt="Resume Template 3"
+          />
         </RightSection>
       </MainContent>
     </PageWrapper>
