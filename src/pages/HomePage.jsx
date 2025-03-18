@@ -153,9 +153,22 @@ const NavBar = styled.nav`
   background: transparent;
   z-index: 10;
   position: relative;
+  width: 100%;
+
+  @media (max-width: 1200px) {
+    padding: 10px 30px; /* Reduce padding earlier */
+  }
+
+  @media (max-width: 1000px) {
+    padding: 8px 25px; /* Reduce further */
+  }
 
   @media (max-width: 768px) {
-    padding: 10px 20px;
+    padding: 6px 20px; /* Keep reducing */
+  }
+
+  @media (max-width: 600px) {
+    padding: 5px 15px; /* Smallest padding for mobile */
   }
 `;
 
@@ -166,7 +179,7 @@ const Logo = styled.div`
 `;
 
 const LogoIcon = styled.span`
-  font-size: 1.25rem;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
   color: ${(props) => (props.theme === "dark" ? "#f0f0f0" : "#fff")};
   animation: ${fadeIn} 1s ease-in-out;
 `;
@@ -176,15 +189,26 @@ const LogoText = styled.span`
   font-weight: 700;
   font-family: Georgia, "Times New Roman", Times, serif;
   cursor: pointer;
+  padding: 6px 10px;
   color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
   animation: ${fadeIn} 1s ease-in-out;
+  @media (max-width: 1000px) {
+    font-size: 1.2rem;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
 `;
 
 const NavLinks = styled.div`
   display: flex;
   gap: 20px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1200px) {
+    gap: 15px;
+  }
+  @media (max-width: 1000px) {
     display: ${(props) => (props.menuOpen ? "flex" : "none")};
     flex-direction: column;
     position: absolute;
@@ -221,7 +245,7 @@ const MenuIcon = styled.div`
   cursor: pointer;
   color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
 
-  @media (max-width: 768px) {
+  @media (max-width: 1000px) {
     display: block;
   }
 `;
@@ -271,12 +295,16 @@ const MainContent = styled.main`
   padding: 40px;
   min-height: calc(100vh - 80px);
 
-  @media (max-width: 768px) {
-    flex-direction: column; /* Stack items vertically on mobile */
-    text-align: center;
-    padding: 20px;
-    align-items: center;
-    justify-content: center;
+  @media (max-width: 1000px) {
+    flex-direction: row; /* Keep buttons on left, images on right */
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: row; /* KEEP IT SIDE-BY-SIDE ON SMALL SCREENS */
+    align-items: flex-start;
+    justify-content: space-between;
   }
 `;
 
@@ -288,7 +316,7 @@ const LeftSection = styled.div`
   padding-left: 60px;
   @media (max-width: 768px) {
     padding-left: 0;
-    align-items: center;
+    align-items: left;
   }
 `;
 
@@ -411,9 +439,19 @@ const StyledButton = styled(Link)`
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 14px;
   flex-wrap: wrap;
-  margin-top: 25px;
+  gap: 14px;
+  width: 100%;
+  max-width: 500px;
+
+  @media (max-width: 1000px) {
+    flex-direction: row;
+    justify-content: flex-start; /* Align buttons to left */
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column; /* Stack vertically only on small screens */
+  }
 `;
 
 const FancyButton = ({ to, children }) => {
@@ -449,11 +487,21 @@ const FancyButton = ({ to, children }) => {
 
 const RightSection = styled.div`
   flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
   position: relative;
-  @media (max-width: 768px) {
-    justify-content: flex-end; /* Ensures it stays on the right */
+
+  @media (max-width: 1000px) {
+    justify-content: flex-end;
+    align-items: center;
+    width: 50%; /* Ensures it remains on the right */
+  }
+
+  @media (max-width: 600px) {
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    margin-top: 10px;
   }
 `;
 
@@ -470,15 +518,15 @@ const ResumeTopImage = styled.img`
   transform: rotate(5deg);
   z-index: 1;
   @media (max-width: 1000px) {
-    width: 180px; /* Smaller at 1000px */
-    right: 20px;
-    top: 10px;
+    width: 220px; /* Smaller at 1000px */
+    right: 0px;
+    top: 40px;
   }
 
   @media (max-width: 600px) {
-    width: 90px; /* Even smaller at 600px */
-    right: 10px;
-    top: 5px;
+    width: 180px; /* Even smaller at 600px */
+    right: 0px;
+    top: 120px;
   }
 `;
 
@@ -495,15 +543,15 @@ const ResumeMiddleImage = styled.img`
   transform: rotate(-3deg);
   z-index: 2;
   @media (max-width: 1000px) {
-    width: 200px; /* Smaller at 1000px */
-    right: 30px;
-    top: 100px;
+    width: 220px; /* Smaller at 1000px */
+    right: 50px;
+    top: 200px;
   }
 
   @media (max-width: 600px) {
-    width: 100px; /* Even smaller at 600px */
-    right: 10px;
-    top: 50px;
+    width: 180px; /* Even smaller at 600px */
+    right: 30px;
+    top: 240px;
   }
 `;
 
@@ -520,15 +568,15 @@ const ResumeBottomImage = styled.img`
   transform: rotate(2deg);
   z-index: 3;
   @media (max-width: 1000px) {
-    width: 210px; /* Smaller at 1000px */
-    right: 40px;
-    top: 200px;
+    width: 220px; /* Smaller at 1000px */
+    right: 100px;
+    top: 340px;
   }
 
   @media (max-width: 600px) {
-    width: 110px; /* Even smaller at 600px */
-    right: 10px;
-    top: 90px;
+    width: 180px; /* Even smaller at 600px */
+    right: 70px;
+    top: 370px;
   }
 `;
 
@@ -593,9 +641,7 @@ const HomePage = () => {
           <Subheading theme={theme}>
             Elevate & streamline your job hunting process.
             <br />
-            Helping you stand out among thousands of other
-            <br />
-            resumes for desired jobs.
+            Helping you stand out among thousands of other applicants.
           </Subheading>
 
           <ButtonGroup>
