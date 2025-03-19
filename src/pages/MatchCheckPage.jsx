@@ -41,7 +41,7 @@ const MatchAnalysisPage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer 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`,
+            Authorization: `Bearer YOUR_OPENAI_API_KEY_HERE`, // Replace with your key
           },
           body: JSON.stringify({
             model: "gpt-4",
@@ -49,37 +49,37 @@ const MatchAnalysisPage = () => {
               {
                 role: "system",
                 content:
-                  "You are an AI career assistant that evaluates how well a resume matches a job description.",
+                  "You are an AI career assistant that evaluates how well a users resume matches a given job description.",
               },
               {
                 role: "user",
                 content: `
               **Evaluate the resume against the job description.**
-              
+  
               **Resume:**
               ${resumeText}
-              
+  
               **Job Description:**
               ${jobDetails.description}
-              
+  
               **Requirements:**
               - Provide a match percentage (0-100%).
-              - List 3-5 strengths.
-              - List 3-5 weaknesses.
-              - Give suggestions to improve the match score.
-              
+              - List exactly **3 strengths**.
+              - List exactly **3 weaknesses**.
+              - List exactly **3 suggestions** for improvement.
+  
               **Output Format:**
               **Match Rating:** <Match Score>%
               **Strengths:**
               1. <Strength 1>
               2. <Strength 2>
               3. <Strength 3>
-              
+  
               **Weaknesses:**
               1. <Weakness 1>
               2. <Weakness 2>
               3. <Weakness 3>
-              
+  
               **Suggested Improvements:**
               1. <Suggestion 1>
               2. <Suggestion 2>
@@ -90,46 +90,44 @@ const MatchAnalysisPage = () => {
           }),
         }
       );
+
       const data = await response.json();
       if (data.choices && data.choices[0].message) {
         const output = data.choices[0].message.content;
 
         const ratingMatch = output.match(/\*\*Match Rating:\*\* (\d+)%/);
         const strengthsMatch = output.match(
-          /\*\*Strengths:\*\*(.*?)\*\*Weaknesses:\*\*/s
+          /\*\*Strengths:\*\*\s*([\s\S]+?)\n\s*\*\*Weaknesses:/
         );
         const weaknessesMatch = output.match(
-          /\*\*Weaknesses:\*\*(.*?)\*\*Suggested Improvements:\*\*/s
+          /\*\*Weaknesses:\*\*\s*([\s\S]+?)\n\s*\*\*Suggested Improvements:/
         );
         const suggestionsMatch = output.match(
-          /\*\*Suggested Improvements:\*\*(.*)/s
+          /\*\*Suggested Improvements:\*\*\s*([\s\S]+)/
         );
 
+        const extractList = (match, defaultText) => {
+          if (!match || !match[1])
+            return [defaultText, defaultText, defaultText]; // Always return 3 items
+
+          const items = match[1]
+            .trim()
+            .split("\n")
+            .map((s) => s.replace(/^\d+\.\s+/, "").trim()) // Remove numbering like "1."
+            .filter((s) => s); // Remove empty strings
+
+          while (items.length < 3) {
+            items.push(defaultText); // Ensure 3 items minimum
+          }
+
+          return items.slice(0, 3); // Ensure exactly 3
+        };
+
         setMatchRating(ratingMatch ? ratingMatch[1] : "N/A");
-        setStrengths(
-          strengthsMatch
-            ? strengthsMatch[1]
-                .trim()
-                .split("\n")
-                .filter((s) => s)
-            : []
-        );
-        setWeaknesses(
-          weaknessesMatch
-            ? weaknessesMatch[1]
-                .trim()
-                .split("\n")
-                .filter((w) => w)
-            : []
-        );
+        setStrengths(extractList(strengthsMatch, "No strength identified."));
+        setWeaknesses(extractList(weaknessesMatch, "No weakness identified."));
         setSuggestions(
-          suggestionsMatch && suggestionsMatch[1]
-            ? suggestionsMatch[1]
-                .trim()
-                .split("\n")
-                .map((s) => s.trim().replace(/\*\*/g, "")) // Removes ** from text
-                .filter((s) => s)
-            : []
+          extractList(suggestionsMatch, "No suggestion available.")
         );
       } else {
         throw new Error("Invalid response from OpenAI");
@@ -141,131 +139,225 @@ const MatchAnalysisPage = () => {
     setLoading(false);
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 p-10 flex flex-col items-center justify-center text-white">
-      <div className="w-full max-w-6xl bg-white shadow-2xl rounded-2xl p-10 text-gray-900">
-        {/* Header */}
-        <div className="flex justify-between items-center border-b pb-4 mb-6">
-          <h1 className="text-4xl font-extrabold text-indigo-700">ResuMate</h1>
-          <span className="text-gray-600 italic text-lg">
-            Simplifying the job process... 😊
-          </span>
-        </div>
-
-        <div className="grid grid-cols-5 gap-4">
-          {/* Resume Upload and Job Details Section */}
-          <div className="col-span-1.25">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-700">
-              Resume Upload:
-            </h2>
-            <ResumeButton onResumeParsed={handleResumeParsed} />
-            {uploadedFileName && (
-              <p className="mt-2 text-sm text-gray-600">
-                Uploaded File:{" "}
-                <span className="font-medium">{uploadedFileName}</span>
-              </p>
-            )}
-
-            {/* Job Details Form */}
-            <div className="mt-6 bg-gray-100 p-6 rounded-xl shadow-lg">
-              <h3 className="text-xl font-semibold mb-4 text-gray-700">
-                Enter Job Details
-              </h3>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  name="title"
-                  value={jobDetails.title}
-                  onChange={handleInputChange}
-                  placeholder="Job Title"
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  name="company"
-                  value={jobDetails.company}
-                  onChange={handleInputChange}
-                  placeholder="Company"
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  name="location"
-                  value={jobDetails.location}
-                  onChange={handleInputChange}
-                  placeholder="Location"
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-                <textarea
-                  name="description"
-                  value={jobDetails.description}
-                  onChange={handleInputChange}
-                  placeholder="Job Description"
-                  className="w-full p-3 border rounded-lg h-32 focus:ring-2 focus:ring-blue-500"
-                ></textarea>
-              </div>
-            </div>
-            <button
-              onClick={analyzeResumeMatch}
-              className="mt-4 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition"
-              disabled={loading}
-            >
-              {loading ? "Analyzing..." : "Analyze Match"}
-            </button>
+    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-purple-500 p-8 flex flex-col font-serif">
+      {/* Header */}
+      <div className="w-full max-w-7xl mx-auto mb-8">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <span className="text-5xl font-black text-white drop-shadow-lg">
+              ResuMate
+            </span>
           </div>
+          <div className="hidden md:flex space-x-6 text-white">
+            <a href="#" className="hover:text-purple-800 transition-colors">
+              Search Postings
+            </a>
+            <a href="#" className="hover:text-purple-800 transition-colors">
+              Jobs For You
+            </a>
+            <a
+              href="#"
+              className="hover:text-purple-800 transition-colors font-bold"
+            >
+              Check Match
+            </a>
+            <a href="#" className="hover:text-purple-800 transition-colors">
+              Improve Resume
+            </a>
+            <a href="#" className="hover:text-purple-800 transition-colors">
+              Job Recommender
+            </a>
+            <a href="#" className="hover:text-purple-800 transition-colors">
+              Interview Process
+            </a>
+          </div>
+        </div>
+      </div>
 
-          {/* Match Analysis Results Section */}
-          <div className="col-span-4 bg-indigo-100 p-8 rounded-xl shadow-lg flex flex-col h-full">
-            <h2 className="text-4xl font-extrabold mb-6 text-indigo-700 text-center">
-              Match Analysis
-            </h2>
+      {/* Main Content */}
+      <div className="w-full max-w-7xl mx-auto bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden">
+        <div className="p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+            {/* Left Column - Resume Upload and Job Details */}
+            <div className="lg:col-span-2 space-y-6">
+              <h1 className="text-4xl font-extrabold text-gray-800">
+                Check Match
+              </h1>
+              <p className="text-gray-600">
+                Evaluate how well your resume matches the job description and
+                get personalized recommendations.
+              </p>
 
-            <div className="bg-white p-6 rounded-lg shadow-md text-gray-800 flex flex-col items-center w-full flex-grow">
-              {/* Match Rating Section */}
-              <div className="text-4xl font-extrabold text-green-600 mb-6">
-                Match Rating: {matchRating !== null ? `${matchRating}%` : "N/A"}
+              <div className="bg-purple-50 p-6 rounded-2xl shadow-lg shadow-purple-300 transition-all transform hover:scale-105">
+                <h2 className="text-2xl font-bold text-purple-700 mb-4">
+                  Upload Resume
+                </h2>
+                <ResumeButton onResumeParsed={handleResumeParsed} />
+                {uploadedFileName && (
+                  <p className="mt-2 text-sm text-gray-600">
+                    Uploaded:{" "}
+                    <span className="font-medium">{uploadedFileName}</span>
+                  </p>
+                )}
               </div>
 
-              {/* Strengths, Weaknesses, and Suggested Improvements */}
-              <div className="grid grid-cols-3 gap-6 w-full flex-grow">
-                {/* Strengths */}
-                <div className="bg-gray-100 p-6 rounded-lg shadow-md flex flex-col h-full">
-                  <h3 className="text-2xl font-bold text-gray-700 text-center mb-4">
-                    Strengths
-                  </h3>
-                  <div className="overflow-y-auto flex-grow p-2 max-h-72">
-                    <ul className="list-disc list-inside text-sm">
-                      {strengths.map((s, i) => (
-                        <li key={i}>{s}</li>
-                      ))}
-                    </ul>
-                  </div>
+              <div className="bg-purple-50 p-6 rounded-2xl shadow-lg shadow-purple-300 transition-all transform hover:scale-105">
+                <h2 className="text-2xl font-bold text-purple-700 mb-4">
+                  Job Details
+                </h2>
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    name="title"
+                    value={jobDetails.title}
+                    onChange={handleInputChange}
+                    placeholder="Job Title"
+                    className="w-full p-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                  />
+                  <input
+                    type="text"
+                    name="company"
+                    value={jobDetails.company}
+                    onChange={handleInputChange}
+                    placeholder="Company"
+                    className="w-full p-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                  />
+                  <input
+                    type="text"
+                    name="location"
+                    value={jobDetails.location}
+                    onChange={handleInputChange}
+                    placeholder="Location"
+                    className="w-full p-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                  />
+                  <textarea
+                    name="description"
+                    value={jobDetails.description}
+                    onChange={handleInputChange}
+                    placeholder="Paste the job description here..."
+                    className="w-full p-3 border border-purple-200 rounded-xl h-32 focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                  ></textarea>
+                </div>
+              </div>
+
+              <button
+                onClick={analyzeResumeMatch}
+                disabled={loading}
+                className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold rounded-xl shadow-lg hover:from-purple-700 hover:to-pink-600 transition-all transform hover:scale-105 disabled:opacity-50"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Analyzing...
+                  </span>
+                ) : (
+                  "Analyze Match"
+                )}
+              </button>
+            </div>
+
+            {/* Right Column - Results */}
+            <div className="lg:col-span-3 self-start">
+              <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div className="bg-gradient-to-r from-purple-600 to-pink-500 p-6">
+                  <h2 className="text-3xl font-extrabold text-white">
+                    Match Analysis
+                  </h2>
                 </div>
 
-                {/* Weaknesses */}
-                <div className="bg-gray-100 p-6 rounded-lg shadow-md flex flex-col h-full">
-                  <h3 className="text-2xl font-bold text-gray-700 text-center mb-4">
-                    Weaknesses
-                  </h3>
-                  <div className="overflow-y-auto flex-grow p-2 max-h-72">
-                    <ul className="list-disc list-inside text-sm">
-                      {weaknesses.map((w, i) => (
-                        <li key={i}>{w}</li>
-                      ))}
-                    </ul>
+                <div className="p-6">
+                  {/* Match Rating */}
+                  <div className="flex justify-center items-center mb-8">
+                    <div className="relative">
+                      <svg className="w-40 h-40" viewBox="0 0 100 100">
+                        <circle
+                          className="text-gray-200"
+                          strokeWidth="10"
+                          stroke="currentColor"
+                          fill="transparent"
+                          r="40"
+                          cx="50"
+                          cy="50"
+                        />
+                        {matchRating !== null && (
+                          <circle
+                            className="text-purple-600"
+                            strokeWidth="10"
+                            strokeDasharray={`${matchRating * 2.51} 251`}
+                            strokeLinecap="round"
+                            stroke="currentColor"
+                            fill="transparent"
+                            r="40"
+                            cx="50"
+                            cy="50"
+                            transform="rotate(-90 50 50)"
+                          />
+                        )}
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-4xl font-bold">
+                          {matchRating !== null ? `${matchRating}%` : "N/A"}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                {/* Suggested Improvements */}
-                <div className="bg-gray-100 p-6 rounded-lg shadow-md flex flex-col h-full">
-                  <h3 className="text-2xl font-bold text-gray-700 text-center mb-4">
-                    Suggested Improvements
-                  </h3>
-                  <div className="overflow-y-auto flex-grow p-2 max-h-72">
-                    <ul className="list-disc list-inside text-sm">
-                      {suggestions.map((s, i) => (
-                        <li key={i}>{s}</li>
-                      ))}
-                    </ul>
+                  {/* Strengths, Weaknesses, Suggestions */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Strengths */}
+                    <div className="bg-green-50 p-4 rounded-xl">
+                      <h3 className="text-lg font-bold text-green-700 mb-2">
+                        Strengths
+                      </h3>
+                      <ul className="list-disc list-inside text-gray-700 font-serif">
+                        {strengths.map((s, i) => (
+                          <li key={i}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Weaknesses */}
+                    <div className="bg-red-50 p-4 rounded-xl">
+                      <h3 className="text-lg font-bold text-red-700 mb-2">
+                        Weaknesses
+                      </h3>
+                      <ul className="list-disc list-inside text-gray-700 font-serif">
+                        {weaknesses.map((w, i) => (
+                          <li key={i}>{w}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Suggestions */}
+                    <div className="bg-blue-50 p-4 rounded-xl">
+                      <h3 className="text-lg font-bold text-blue-700 mb-2">
+                        Suggestions
+                      </h3>
+                      <ul className="list-disc list-inside text-gray-700 font-serif">
+                        {suggestions.map((s, i) => (
+                          <li key={i}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
