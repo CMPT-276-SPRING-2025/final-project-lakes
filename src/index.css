@@ -5,11 +5,11 @@
 /* Enable dark mode */
 @layer base {
   :root {
-    --color-bg: white;
+    --color-bg: linear-gradient(135deg, #c2c1df 0%, #ffc0cb 100%);
     --color-text: black;
   }
   .dark {
-    --color-bg: #111827;
+    --color-bg: linear-gradient(135deg, #1f1f3f 0%, #331f3f 100%);
     --color-text: white;
   }
 }
