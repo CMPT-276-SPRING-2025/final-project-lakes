@@ -66,7 +66,7 @@ const MatchAnalysisPage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer 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`, // Replace with environment variable
+            Authorization: `Bearer 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`,
           },
           body: JSON.stringify({
             model: "gpt-4",
@@ -74,7 +74,7 @@ const MatchAnalysisPage = () => {
               {
                 role: "system",
                 content:
-                  "You are an AI career assistant that evaluates how well my resume matches a given job description. Please provide invaluable feedback to help me improve my resume and stand out.",
+                  "You are an AI career assistant that evaluates how well a users resume matches a given job description.",
               },
               {
                 role: "user",
@@ -335,11 +335,6 @@ ${jobDetails.description}
                     </p>
                   )}
                 </motion.div>
-                {/* Small Note Under the Button */}
-                <p className="mt-2 text-sm text-gray-500">
-                  No sign up required. Your data is only used to match you with
-                  relevant jobs.
-                </p>
               </div>
             </motion.div>
             {/* Job Details Card */}
