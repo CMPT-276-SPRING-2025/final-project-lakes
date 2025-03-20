@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ResumeButton from "../components/resumebutton";
 import { motion, AnimatePresence } from "framer-motion";
-// import Navbar from "../components/Navbar"; // Import the Navbar component
+import Navbar from "../components/Navbar"; // Import the Navbar component
 // import Footer from "../components/Footer"; // Import the Footer component
 
 const OPENAI_API_KEY =
@@ -242,7 +242,7 @@ const CuratedJobsPage = () => {
       />
 
       {/* Use the Navbar component */}
-      {/* <Navbar darkMode={darkMode} setDarkMode={setDarkMode} /> */}
+      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
 
       {/* Main content */}
       <main className="max-w-7xl mx-auto px-8 pt-8 pb-16 relative z-10">
