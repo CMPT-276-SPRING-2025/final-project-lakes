@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ResumeButton from "../components/resumebutton";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar"; // Import the Navbar component
-// import Footer from "../components/Footer"; // Import the Footer component
+import Footer from "../components/Footer"; // Import the Footer component
 
 const OPENAI_API_KEY =
   "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";
@@ -706,7 +706,7 @@ const CuratedJobsPage = () => {
       </main>
 
       {/* Use the Footer component */}
-      {/* <Footer darkMode={darkMode} /> */}
+      <Footer darkMode={darkMode} />
     </div>
   );
 };
