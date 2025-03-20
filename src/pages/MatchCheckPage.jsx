@@ -1,31 +1,43 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import ResumeButton from "../components/ResumeButton.jsx";
-import styled from "styled-components";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
+// Variants for card animations
+const cardVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 100, damping: 15 },
+  },
+};
 
 const MatchAnalysisPage = () => {
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-
+  // Instead of "theme", use a boolean darkMode for consistency
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("theme") === "dark" ? true : false
+  );
   useEffect(() => {
-    document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
+  // Particle and glow effect state
+  const [showGlowEffect, setShowGlowEffect] = useState(false);
 
+  // Your existing state and logic for resume analysis
   const [jobDetails, setJobDetails] = useState({
     title: "",
     company: "",
     location: "",
     description: "",
   });
-  const [resumeText, setResumeText] = useState(""); // Extracted resume text
+  const [resumeText, setResumeText] = useState("");
   const [matchRating, setMatchRating] = useState(null);
   const [strengths, setStrengths] = useState([]);
   const [weaknesses, setWeaknesses] = useState([]);
-  const [suggestions, setSuggestions] = useState([]); // FIXED: Initialize as an array
+  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
 
@@ -54,7 +66,7 @@ const MatchAnalysisPage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer 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`, // Replace with your key
+            Authorization: `Bearer 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`, // Replace with environment variable
           },
           body: JSON.stringify({
             model: "gpt-4",
@@ -62,41 +74,41 @@ const MatchAnalysisPage = () => {
               {
                 role: "system",
                 content:
-                  "You are an AI career assistant that evaluates how well a users resume matches a given job description.",
+                  "You are an AI career assistant that evaluates how well my resume matches a given job description. Please provide invaluable feedback to help me improve my resume and stand out.",
               },
               {
                 role: "user",
                 content: `
-              **Evaluate the resume against the job description.**
-  
-              **Resume:**
-              ${resumeText}
-  
-              **Job Description:**
-              ${jobDetails.description}
-  
-              **Requirements:**
-              - Provide a match percentage (0-100%).
-              - List exactly **3 strengths**.
-              - List exactly **3 weaknesses**.
-              - List exactly **3 suggestions** for improvement.
-  
-              **Output Format:**
-              **Match Rating:** <Match Score>%
-              **Strengths:**
-              1. <Strength 1>
-              2. <Strength 2>
-              3. <Strength 3>
-  
-              **Weaknesses:**
-              1. <Weakness 1>
-              2. <Weakness 2>
-              3. <Weakness 3>
-  
-              **Suggested Improvements:**
-              1. <Suggestion 1>
-              2. <Suggestion 2>
-              3. <Suggestion 3>
+**Evaluate the resume against the job description.**
+
+**Resume:**
+${resumeText}
+
+**Job Description:**
+${jobDetails.description}
+
+**Requirements:**
+- Provide a match percentage (0-100%).
+- List exactly **3 strengths**.
+- List exactly **3 weaknesses**.
+- List exactly **3 suggestions** for improvement.
+
+**Output Format:**
+**Match Rating:** <Match Score>%
+**Strengths:**
+1. <Strength 1>
+2. <Strength 2>
+3. <Strength 3>
+
+**Weaknesses:**
+1. <Weakness 1>
+2. <Weakness 2>
+3. <Weakness 3>
+
+**Suggested Improvements:**
+1. <Suggestion 1>
+2. <Suggestion 2>
+3. <Suggestion 3>
             `,
               },
             ],
@@ -121,19 +133,19 @@ const MatchAnalysisPage = () => {
 
         const extractList = (match, defaultText) => {
           if (!match || !match[1])
-            return [defaultText, defaultText, defaultText]; // Always return 3 items
+            return [defaultText, defaultText, defaultText];
 
           const items = match[1]
             .trim()
             .split("\n")
-            .map((s) => s.replace(/^\d+\.\s+/, "").trim()) // Remove numbering like "1."
-            .filter((s) => s); // Remove empty strings
+            .map((s) => s.replace(/^\d+\.\s+/, "").trim())
+            .filter((s) => s);
 
           while (items.length < 3) {
-            items.push(defaultText); // Ensure 3 items minimum
+            items.push(defaultText);
           }
 
-          return items.slice(0, 3); // Ensure exactly 3
+          return items.slice(0, 3);
         };
 
         setMatchRating(ratingMatch ? ratingMatch[1] : "N/A");
@@ -151,505 +163,457 @@ const MatchAnalysisPage = () => {
     }
     setLoading(false);
   };
+
+  // Particle and glow effects (similar to friend’s file)
+  useEffect(() => {
+    setShowGlowEffect(true);
+    const createParticles = () => {
+      const particleContainer = document.getElementById("particle-container");
+      if (!particleContainer) return;
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement("div");
+        particle.className = "absolute rounded-full bg-white opacity-20 z-0";
+        const size = Math.random() * 10 + 5;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        const duration = Math.random() * 15 + 15;
+        particle.style.animation = `float ${duration}s ease-in-out infinite`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        particleContainer.appendChild(particle);
+      }
+    };
+    createParticles();
+    return () => {
+      const particleContainer = document.getElementById("particle-container");
+      if (particleContainer) particleContainer.innerHTML = "";
+    };
+  }, []);
+
+  // Toggle function for dark mode
+  const toggleTheme = () => setDarkMode((prev) => !prev);
+
   return (
-    <StyledContainer theme={theme}>
-      {/* Header */}
-      <div className="w-full max-w-7xl mx-auto mb-8">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <span
-              className="text-5xl font-black drop-shadow-md"
-              style={{
-                color: theme === "dark" ? "#ffffff" : "#111",
-                margin: "0 0 1.5rem 0",
-                lineHeight: "1",
-                textShadow: `1px 1px 5px ${
-                  theme === "dark" ? "#f0f0f0" : "#111"
-                }`,
-                animation: "fadeIn 1s ease-in-out",
-                fontSize: "1.3rem",
-                fontWeight: 700,
-                fontFamily: "Georgia, 'Times New Roman', Times, serif",
-                cursor: "pointer",
-                padding: "6px 10px",
-              }}
-            >
-              ResuMate
-            </span>
-          </div>
-          <div className="hidden md:flex space-x-6 text-white">
-            <a href="#" className="hover:text-purple-800 transition-colors">
-              Search Postings
-            </a>
-            <a href="#" className="hover:text-purple-800 transition-colors">
-              Jobs For You
-            </a>
-            <a
-              href="#"
-              className="hover:text-purple-800 transition-colors font-bold"
-            >
-              Check Match
-            </a>
-            <a href="#" className="hover:text-purple-800 transition-colors">
-              Improve Resume
-            </a>
-            <a href="#" className="hover:text-purple-800 transition-colors">
-              Job Recommender
-            </a>
-            <a href="#" className="hover:text-purple-800 transition-colors">
-              Interview Process
-            </a>
-          </div>
-
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-md transition-all hover:scale-110"
-            style={{
-              background: theme === "dark" ? "#333" : "#ddd",
-              color: theme === "dark" ? "#fff" : "#000",
-              boxShadow:
-                theme === "dark"
-                  ? "0px 4px 6px rgba(255,255,255,0.5)"
-                  : "0px 4px 6px rgba(0,0,0,0.5)",
-            }}
-          >
-            {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content */}
+    <div
+      className={`${
+        darkMode ? "bg-gray-900 text-white" : ""
+      } relative min-h-screen w-full overflow-hidden transition-all duration-500`}
+    >
+      {/* Particle container */}
       <div
-        className="w-full max-w-7xl mx-auto bg-white/80 dark:bg-gray-900 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden"
-        style={{
-          background: theme === "dark" ? "#1e1e2e" : "#fff",
-          boxShadow:
-            theme === "dark"
-              ? "0px 8px 16px rgba(255,255,255,0.3)"
-              : "0px 8px 16px rgba(0,0,0,0.3)",
-        }}
+        id="particle-container"
+        className="absolute inset-0 overflow-hidden pointer-events-none"
+      />
+      {/* Gradient background and animated blobs */}
+      <div
+        className={`absolute inset-0 transition-all duration-1000 ${
+          darkMode
+            ? "bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800"
+            : "bg-gradient-to-br from-purple-100 via-pink-100 to-rose-100"
+        }`}
       >
-        <div className="p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-            {/* Left Column - Resume Upload and Job Details */}
-            <div className="lg:col-span-2 space-y-6">
-              <h1
-                className="text-5xl font-extrabold drop-shadow-sm"
-                style={{
-                  color: theme === "dark" ? "#f0f0f0" : "#111",
-                  margin: "0 0 1.5rem 0",
-                  lineHeight: "1",
-                  textShadow: `0px 1px 6px ${
-                    theme === "dark" ? "#f0f0f0" : "#111"
-                  }`,
-                  animation: "fadeIn 1s ease-in-out",
-                }}
-              >
-                Check Match
-              </h1>
-              <p
-                className="opacity-80"
-                style={{ color: theme === "dark" ? "#fff" : "#333" }}
-              >
-                Evaluate how well your resume matches the job description and
-                get personalized recommendations.
-              </p>
-
-              <div
-                className="p-6 rounded-2xl transition-all transform hover:scale-105"
-                style={{
-                  background:
-                    theme === "dark"
-                      ? "linear-gradient(135deg, rgb(82, 82, 170) 0%, #331f3f 100%)"
-                      : "linear-gradient(135deg, rgba(240, 196, 225, 0.26) 0%,rgba(135, 131, 217, 0.45) 100%)",
-                  boxShadow:
-                    theme === "dark"
-                      ? "0px 5px 10px #ffffff"
-                      : "0px 5px 10px #1e1e2e",
-                }}
-              >
+        <motion.div
+          className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl -z-10 ${
+            darkMode ? "bg-purple-700" : "bg-purple-300"
+          } opacity-20`}
+          animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
+          transition={{ duration: 20, repeat: Infinity, repeatType: "mirror" }}
+        />
+        <motion.div
+          className={`absolute top-2/3 right-1/4 w-80 h-80 rounded-full blur-3xl -z-10 ${
+            darkMode ? "bg-blue-700" : "bg-blue-300"
+          } opacity-20`}
+          animate={{ x: [0, -70, 0], y: [0, 40, 0] }}
+          transition={{ duration: 18, repeat: Infinity, repeatType: "mirror" }}
+        />
+        <motion.div
+          className={`absolute bottom-1/4 right-1/3 w-64 h-64 rounded-full blur-3xl -z-10 ${
+            darkMode ? "bg-rose-700" : "bg-rose-300"
+          } opacity-20`}
+          animate={{ x: [0, 60, 0], y: [0, -30, 0] }}
+          transition={{ duration: 15, repeat: Infinity, repeatType: "mirror" }}
+        />
+      </div>
+      {/* Glow effect */}
+      <motion.div
+        className="absolute inset-0 opacity-0 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showGlowEffect ? 0.1 : 0 }}
+        transition={{ duration: 2 }}
+        style={{
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%)",
+        }}
+      />
+      {/* Navbar (uses your friend’s common component) */}
+      <Navbar darkMode={darkMode} setDarkMode={toggleTheme} />
+      <main className="max-w-7xl mx-auto px-8 pt-8 pb-16 relative z-10">
+        {/* Page Heading */}
+        <motion.div
+          className="mb-16 text-center md:text-left"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <motion.h1
+            className={`text-5xl font-bold mb-4 ${
+              darkMode ? "text-white" : "text-black"
+            }`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            Match Analysis
+          </motion.h1>
+          <motion.p
+            className={`text-xl ${
+              darkMode ? "text-gray-300" : "text-gray-700"
+            } max-w-2xl mx-auto md:mx-0`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+          >
+            Evaluate your resume against a job description and get personalized
+            feedback.
+          </motion.p>
+        </motion.div>
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Column: Resume Upload & Job Details */}
+          <motion.div
+            className="lg:w-1/3"
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.3 }}
+          >
+            {/* Resume Upload Card */}
+            <motion.div
+              className={`rounded-2xl overflow-hidden ${
+                darkMode
+                  ? "bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700"
+                  : "bg-white bg-opacity-70 backdrop-blur-lg border border-gray-100"
+              } shadow-xl`}
+              whileHover={{
+                y: -5,
+                boxShadow:
+                  "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              <div className="p-8">
                 <h2
-                  className="text-2xl font-bold mb-4"
-                  style={{ color: theme === "dark" ? "#f0f0f0" : "#333" }}
+                  className={`text-2xl font-bold mb-6 ${
+                    darkMode ? "text-white" : "text-gray-800"
+                  }`}
                 >
                   Upload Resume
                 </h2>
-                <ResumeButton onResumeParsed={handleResumeParsed} />
-                {uploadedFileName && (
-                  <p
-                    className="mt-2 text-sm opacity-80"
-                    style={{ color: theme === "dark" ? "#ddd" : "#111" }}
-                  >
-                    Uploaded:{" "}
-                    <span className="font-medium">{uploadedFileName}</span>
-                  </p>
-                )}
-              </div>
-
-              <div
-                className="p-6 rounded-2xl transition-all transform hover:scale-105"
-                style={{
-                  background:
-                    theme === "dark"
-                      ? "linear-gradient(135deg, rgb(82, 82, 170) 0%, #331f3f 100%)"
-                      : "linear-gradient(135deg, rgba(221, 179, 206, 0.26) 0%,rgb(175, 173, 218) 100%)",
-                  boxShadow:
-                    theme === "dark"
-                      ? "0px 5px 10px #ffffff"
-                      : "0px 5px 10px #1e1e2e",
-                }}
-              >
-                <h2
-                  className="text-2xl font-bold mb-4"
-                  style={{ color: theme === "dark" ? "#f0f0f0" : "#333" }}
+                <motion.div
+                  className={`flex flex-col items-center justify-center py-16 px-8 rounded-xl ${
+                    darkMode
+                      ? "bg-gray-700 bg-opacity-40 border border-gray-600"
+                      : "bg-gray-50 border-2 border-dashed border-gray-300"
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  Job Details
-                </h2>
-                <div className="space-y-4">
-                  <input
-                    type="text"
-                    name="title"
-                    value={jobDetails.title}
-                    onChange={handleInputChange}
-                    placeholder="Job Title"
-                    className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent 
-                      ${
-                        theme === "dark"
-                          ? "bg-gray-700 text-white border-white border-2"
-                          : "bg-gray-100 text-black border-black border-2"
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <ResumeButton onResumeParsed={handleResumeParsed} />
+                  </motion.div>
+                  {uploadedFileName && (
+                    <p
+                      className={`mt-2 text-sm ${
+                        darkMode ? "text-gray-300" : "text-gray-600"
                       }`}
-                  />
-                  <input
-                    type="text"
-                    name="company"
-                    value={jobDetails.company}
-                    onChange={handleInputChange}
-                    placeholder="Company"
-                    className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent 
-                      ${
-                        theme === "dark"
-                          ? "bg-gray-700 text-white border-white border-2"
-                          : "bg-gray-100 text-black border-black border-2"
-                      }`}
-                  />
-                  <input
-                    type="text"
-                    name="location"
-                    value={jobDetails.location}
-                    onChange={handleInputChange}
-                    placeholder="Location"
-                    className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent 
-                      ${
-                        theme === "dark"
-                          ? "bg-gray-700 text-white border-white border-2"
-                          : "bg-gray-100 text-black border-black border-2"
-                      }`}
-                  />
-                  <textarea
-                    name="description"
-                    value={jobDetails.description}
-                    onChange={handleInputChange}
-                    placeholder="Paste the job description here..."
-                    className={`w-full p-3 rounded-xl h-32 focus:ring-2 focus:ring-purple-400 focus:border-transparent 
-                      ${
-                        theme === "dark"
-                          ? "bg-gray-700 text-white border-white border-2"
-                          : "bg-gray-100 text-black border-black border-2"
-                      }`}
-                  ></textarea>
-                </div>
+                    >
+                      Uploaded:{" "}
+                      <span className="font-medium">{uploadedFileName}</span>
+                    </p>
+                  )}
+                </motion.div>
+                {/* Small Note Under the Button */}
+                <p className="mt-2 text-sm text-gray-500">
+                  No sign up required. Your data is only used to match you with
+                  relevant jobs.
+                </p>
               </div>
-
+            </motion.div>
+            {/* Job Details Card */}
+            <motion.div
+              className="mt-8"
+              variants={cardVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.5 }}
+            >
+              <motion.div
+                className={`rounded-2xl overflow-hidden ${
+                  darkMode
+                    ? "bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700"
+                    : "bg-white bg-opacity-70 backdrop-blur-lg border border-gray-100"
+                } shadow-xl`}
+                whileHover={{
+                  y: -5,
+                  boxShadow:
+                    "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <div className="p-8">
+                  <h2
+                    className={`text-2xl font-bold mb-6 ${
+                      darkMode ? "text-white" : "text-gray-800"
+                    }`}
+                  >
+                    Job Details
+                  </h2>
+                  <div className="space-y-4">
+                    <input
+                      type="text"
+                      name="title"
+                      value={jobDetails.title}
+                      onChange={handleInputChange}
+                      placeholder="Job Title"
+                      className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
+                        darkMode
+                          ? "bg-gray-700 text-white border-white border-2"
+                          : "bg-gray-100 text-black border-black border-2"
+                      }`}
+                    />
+                    <input
+                      type="text"
+                      name="company"
+                      value={jobDetails.company}
+                      onChange={handleInputChange}
+                      placeholder="Company"
+                      className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
+                        darkMode
+                          ? "bg-gray-700 text-white border-white border-2"
+                          : "bg-gray-100 text-black border-black border-2"
+                      }`}
+                    />
+                    <input
+                      type="text"
+                      name="location"
+                      value={jobDetails.location}
+                      onChange={handleInputChange}
+                      placeholder="Location"
+                      className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
+                        darkMode
+                          ? "bg-gray-700 text-white border-white border-2"
+                          : "bg-gray-100 text-black border-black border-2"
+                      }`}
+                    />
+                    <textarea
+                      name="description"
+                      value={jobDetails.description}
+                      onChange={handleInputChange}
+                      placeholder="Paste the job description here..."
+                      className={`w-full p-3 rounded-xl h-32 focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
+                        darkMode
+                          ? "bg-gray-700 text-white border-white border-2"
+                          : "bg-gray-100 text-black border-black border-2"
+                      }`}
+                    ></textarea>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+            {/* Analyze Match Button */}
+            <motion.div
+              className="mt-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+            >
               <FancyButton
                 onClick={analyzeResumeMatch}
                 loading={loading}
-                theme={theme}
+                darkMode={darkMode}
               />
-            </div>
-
-            {/* Right Column - Results */}
-            <div className="lg:col-span-3 self-start">
-              <div
-                className="bg-white dark:bg-gray-800 dark:text-white rounded-2xl shadow-md overflow-hidden"
-                style={{
-                  boxShadow:
-                    theme === "dark"
-                      ? "0px 5px 10px #ffffff"
-                      : "0px 5px 10px #1e1e2e",
-                  color: theme === "dark" ? "#f0f0f0" : "#111",
-                }}
-              >
-                <div
-                  className="bg-gradient-to-r from-purple-600 to-pink-500 p-6"
-                  style={{
-                    background:
-                      theme === "dark"
-                        ? "linear-gradient(135deg, rgb(82, 82, 170) 0%, #331f3f 100%)"
-                        : "linear-gradient(135deg, rgba(221, 179, 206, 0.26) 0%,rgb(175, 173, 218) 100%)",
-                    boxShadow:
-                      theme === "dark"
-                        ? "0px 5px 10px #ffffff"
-                        : "0px 5px 10px #1e1e2e",
-                    color: theme === "dark" ? "#f0f0f0" : "#111",
-                  }}
-                >
-                  <h2 className="text-3xl font-extrabold">Match Analysis</h2>
-                </div>
-
-                <div
-                  className="p-6"
-                  style={{
-                    color: theme === "dark" ? "#ffffff" : "#111", // Set text color dynamically
-                  }}
-                >
-                  {/* Match Rating */}
-                  <div className="flex justify-center items-center mb-8">
-                    <div className="relative">
-                      <svg className="w-40 h-40" viewBox="0 0 100 100">
+            </motion.div>
+          </motion.div>
+          {/* Right Column: Results */}
+          <motion.div
+            className="lg:w-2/3"
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.7 }}
+          >
+            <motion.div
+              className={`rounded-2xl overflow-hidden ${
+                darkMode
+                  ? "bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700"
+                  : "bg-white bg-opacity-70 backdrop-blur-lg border border-gray-100"
+              } shadow-xl`}
+              whileHover={{
+                y: -5,
+                boxShadow:
+                  "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              <div className="p-8">
+                {/* Match Rating */}
+                <div className="flex justify-center items-center mb-8">
+                  <div className="relative">
+                    <svg className="w-40 h-40" viewBox="0 0 100 100">
+                      <circle
+                        className="text-gray-200"
+                        strokeWidth="10"
+                        stroke="currentColor"
+                        fill="transparent"
+                        r="40"
+                        cx="50"
+                        cy="50"
+                      />
+                      {matchRating !== null && (
                         <circle
-                          className="text-gray-200"
+                          className="text-purple-600"
                           strokeWidth="10"
+                          strokeDasharray={`${matchRating * 2.51} 251`}
+                          strokeLinecap="round"
                           stroke="currentColor"
                           fill="transparent"
                           r="40"
                           cx="50"
                           cy="50"
+                          transform="rotate(-90 50 50)"
                         />
-                        {matchRating !== null && (
-                          <circle
-                            className="text-purple-600"
-                            strokeWidth="10"
-                            strokeDasharray={`${matchRating * 2.51} 251`}
-                            strokeLinecap="round"
-                            stroke="currentColor"
-                            fill="transparent"
-                            r="40"
-                            cx="50"
-                            cy="50"
-                            transform="rotate(-90 50 50)"
-                          />
-                        )}
-                      </svg>
-                      <div
-                        className="absolute inset-0 flex items-center justify-center"
-                        style={{ color: theme === "dark" ? "#ffffff" : "#111" }} // Dynamic text color
-                      >
-                        <span className="text-4xl font-bold">
-                          {matchRating !== null ? `${matchRating}%` : "N/A"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Strengths, Weaknesses, Suggestions */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Strengths */}
+                      )}
+                    </svg>
                     <div
-                      className="p-4 rounded-xl"
-                      style={{
-                        background: theme === "dark" ? "#2f3a2d" : "#d4edda",
-                        color: theme === "dark" ? "#ffffff" : "#155724", // Dynamic text color
-                        boxShadow:
-                          theme === "dark"
-                            ? "0px 5px 10px #ffffff"
-                            : "0px 5px 10px #1e1e2e",
-                      }}
+                      className="absolute inset-0 flex items-center justify-center"
+                      style={{ color: darkMode ? "#ffffff" : "#111" }}
                     >
-                      <h3 className="text-xl font-bold mb-2">Strengths:</h3>
-                      <ul className="list-disc list-inside">
-                        {strengths.map((s, i) => (
-                          <li key={i}>{s}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Weaknesses */}
-                    <div
-                      className="p-4 rounded-xl"
-                      style={{
-                        background: theme === "dark" ? "#330000" : "#f8d7da",
-                        color: theme === "dark" ? "#ffffff" : "#721c24", // Dynamic text color
-                        boxShadow:
-                          theme === "dark"
-                            ? "0px 5px 10px #ffffff"
-                            : "0px 5px 10px #1e1e2e",
-                      }}
-                    >
-                      <h3 className="text-xl font-bold mb-2">Weaknesses:</h3>
-                      <ul className="list-disc list-inside">
-                        {weaknesses.map((w, i) => (
-                          <li key={i}>{w}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Suggestions */}
-                    <div
-                      className="p-4 rounded-xl"
-                      style={{
-                        background: theme === "dark" ? "#001a33" : "#cce5ff",
-                        color: theme === "dark" ? "#ffffff" : "#004085", // Dynamic text color
-                        boxShadow:
-                          theme === "dark"
-                            ? "0px 5px 10px #ffffff"
-                            : "0px 5px 10px #1e1e2e",
-                      }}
-                    >
-                      <h3 className="text-xl font-bold mb-2">Suggestions:</h3>
-                      <ul className="list-disc list-inside">
-                        {suggestions.map((s, i) => (
-                          <li key={i}>{s}</li>
-                        ))}
-                      </ul>
+                      <span className="text-4xl font-bold">
+                        {matchRating !== null ? `${matchRating}%` : "N/A"}
+                      </span>
                     </div>
                   </div>
                 </div>
+                {/* Strengths, Weaknesses, Suggestions */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <motion.div
+                    className={`p-4 rounded-xl ${
+                      darkMode
+                        ? "bg-purple-800 bg-opacity-40 text-purple-100"
+                        : "bg-purple-100 text-purple-800"
+                    } shadow-md`}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  >
+                    <h3 className="text-xl font-bold mb-2">Strengths:</h3>
+                    <ul className="list-disc list-inside">
+                      {strengths.map((s, i) => (
+                        <li key={i}>{s}</li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                  <motion.div
+                    className={`p-4 rounded-xl ${
+                      darkMode
+                        ? "bg-red-800 bg-opacity-40 text-red-100"
+                        : "bg-red-100 text-red-800"
+                    } shadow-md`}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  >
+                    <h3 className="text-xl font-bold mb-2">Weaknesses:</h3>
+                    <ul className="list-disc list-inside">
+                      {weaknesses.map((w, i) => (
+                        <li key={i}>{w}</li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                  <motion.div
+                    className={`p-4 rounded-xl ${
+                      darkMode
+                        ? "bg-blue-800 bg-opacity-40 text-blue-100"
+                        : "bg-blue-100 text-blue-800"
+                    } shadow-md`}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  >
+                    <h3 className="text-xl font-bold mb-2">Suggestions:</h3>
+                    <ul className="list-disc list-inside">
+                      {suggestions.map((s, i) => (
+                        <li key={i}>{s}</li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
-      </div>
-    </StyledContainer>
+      </main>
+      <Footer darkMode={darkMode} />
+    </div>
   );
 };
 
 export default MatchAnalysisPage;
 
-const StyledContainer = styled.div`
-  min-height: 100vh;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  font-family: "serif";
-  background: ${(props) =>
-    props.theme === "dark"
-      ? "linear-gradient(135deg, rgb(82, 82, 170) 0%, #331f3f 100%)"
-      : "linear-gradient(135deg, #c2c1df 0%, #ffc0cb 100%)"};
-  transition: background 0.3s ease-in-out;
-`;
-
-const StyledButton = styled.button`
-  display: flex;
-  width: auto;
-  min-width: 9em;
-  height: 3em;
-  background-color: #1d2129;
-  border-radius: 40px;
-  box-shadow: 0px 5px 10px
-    ${(props) => (props.theme === "dark" ? "#ffffff" : "#1e1e2e")};
-  justify-content: space-between;
-  align-items: center;
-  border: none;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  border: 1px solid
-    ${(props) => (props.theme === "dark" ? "#ffffff" : "#1e1e2e")};
-  transition: transform 0.2s ease-in-out, background 0.3s ease-in-out;
-
-  &:hover {
-    transform: scale(1.05);
-    background-color: #292e3a;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .icon-Container {
-    width: 45px;
-    height: 45px;
-    background-color: ${(props) =>
-      props.theme === "dark" ? "#ffffff" : "#ffffff"};
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    border: 1px solid
-      ${(props) => (props.theme === "dark" ? "#ffffff" : "#1e1e2e")};
-  }
-
-  .text {
-    width: calc(170px - 45px);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 0.8em;
-    letter-spacing: 1.2px;
-  }
-
-  .icon-Container svg {
-    transition-duration: 1.5s;
-    color: black;
-  }
-
-  &:hover .icon-Container svg {
-    animation: arrowMove 1s linear infinite;
-  }
-
-  @keyframes arrowMove {
-    0% {
-      opacity: 0;
-      margin-left: 0px;
-    }
-    100% {
-      opacity: 1;
-      margin-left: 5px;
-    }
-  }
-`;
-
-// The button component with click functionality
-const FancyButton = ({ onClick, loading, theme }) => {
+// FancyButton component styled with framer-motion and Tailwind
+const FancyButton = ({ onClick, loading, darkMode }) => {
   return (
-    <StyledButton onClick={onClick} disabled={loading} theme={theme}>
-      <span className="text">{loading ? "Analyzing..." : "Analyze Match"}</span>
-      <span className="icon-Container">
-        {loading ? (
+    <motion.button
+      onClick={onClick}
+      disabled={loading}
+      className={`px-6 py-3 rounded-full ${
+        darkMode
+          ? "bg-purple-600 hover:bg-purple-700"
+          : "bg-purple-500 hover:bg-purple-600"
+      } text-white font-medium shadow-lg flex items-center space-x-2 transition-transform`}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      {loading ? (
+        <svg
+          className="animate-spin h-5 w-5"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      ) : (
+        <>
+          <span>Analyze Match</span>
           <svg
-            className="animate-spin h-5 w-5"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
+            className="ml-2 w-4 h-4"
             viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-        ) : (
-          <svg
-            width={16}
-            height={19}
-            viewBox="0 0 16 19"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <circle cx="1.61321" cy="1.61321" r="1.5" fill="black" />
-            <circle cx="5.73583" cy="1.61321" r="1.5" fill="black" />
-            <circle cx="5.73583" cy="5.5566" r="1.5" fill="black" />
-            <circle cx="9.85851" cy="5.5566" r="1.5" fill="black" />
-            <circle cx="9.85851" cy="9.5" r="1.5" fill="black" />
-            <circle cx="13.9811" cy="9.5" r="1.5" fill="black" />
-            <circle cx="5.73583" cy="13.4434" r="1.5" fill="black" />
-            <circle cx="9.85851" cy="13.4434" r="1.5" fill="black" />
-            <circle cx="1.61321" cy="17.3868" r="1.5" fill="black" />
-            <circle cx="5.73583" cy="17.3868" r="1.5" fill="black" />
+            <path
+              d="M5 12H19M19 12L12 5M19 12L12 19"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
-        )}
-      </span>
-    </StyledButton>
+        </>
+      )}
+    </motion.button>
   );
 };

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import { motion } from "framer-motion";
+import { Upload } from "lucide-react";
 
 // Dynamically set the worker path
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -19,12 +21,9 @@ const ResumeButton = ({ onResumeParsed }) => {
         const reader = new FileReader();
         reader.onload = async (e) => {
           const pdfData = new Uint8Array(e.target.result);
-
-          // Load the PDF
           const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
           let extractedText = "";
 
-          // Extract text from each page
           for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
@@ -33,12 +32,8 @@ const ResumeButton = ({ onResumeParsed }) => {
               .join(" ");
           }
 
-          // Log the extracted text to the console
           console.log("Extracted PDF Text:", extractedText);
-
-          // Pass the extracted text to the parent component
           onResumeParsed(extractedText, file.name);
-
           event.target.value = "";
         };
         reader.readAsArrayBuffer(file);
@@ -54,14 +49,8 @@ const ResumeButton = ({ onResumeParsed }) => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-6">
-      <label
-        htmlFor="resume-upload"
-        className="bg-blue-500 text-white px-6 py-2 rounded-lg cursor-pointer 
-          hover:bg-blue-600 transition-all duration-300"
-      >
-        {isLoading ? "Processing..." : "Upload Resume (PDF)"}
-      </label>
+    <div className="flex flex-col items-center justify-center w-full">
+      {/* Hidden File Input */}
       <input
         id="resume-upload"
         type="file"
@@ -70,6 +59,19 @@ const ResumeButton = ({ onResumeParsed }) => {
         onChange={handleFileUpload}
         disabled={isLoading}
       />
+
+      {/* Styled Upload Button */}
+      <motion.label
+        htmlFor="resume-upload"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="flex items-center space-x-2 px-6 py-3 rounded-full 
+                   bg-purple-500 text-white font-medium shadow-lg
+                   hover:bg-purple-600 transition cursor-pointer"
+      >
+        <Upload size={20} />
+        <span>{isLoading ? "Processing..." : "Upload Resume"}</span>
+      </motion.label>
     </div>
   );
 };
