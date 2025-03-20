@@ -335,6 +335,14 @@ ${jobDetails.description}
                     </p>
                   )}
                 </motion.div>
+                <p
+                  className={`mt-8 text-sm ${
+                    darkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  No sign up required. Your data is only used to match you with
+                  relevant jobs.
+                </p>
               </div>
             </motion.div>
             {/* Job Details Card */}
