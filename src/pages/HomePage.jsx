@@ -1,40 +1,59 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import styled, { keyframes } from "styled-components";
-import { FiMenu, FiX } from "react-icons/fi";
-// Import your resume images
+
+// Import your Navbar & Footer from the new system
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
+// Import your three resume images (adjust paths as needed)
 import resumeImage1 from "../../images/1.png";
 import resumeImage2 from "../../images/2.png";
 import resumeImage3 from "../../images/3.png";
 
-// --------------------
-// Theme Context & Provider
-// --------------------
-const ThemeContext = createContext();
+/* -------------------------
+   Typing Effect Data/Logic
+-------------------------- */
+const typingTexts = [
+  "We make it easy to brand you...",
+  "Helping you stand out in the job market...",
+  "Your AI-powered resume assistant...",
+];
 
-export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("theme") || "light"
-  );
+function useTypedText(texts, speed = 100) {
+  const [index, setIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+  const [displayText, setDisplayText] = useState("");
 
   useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-    root.classList.add(theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    const currentText = texts[index];
+    const timer = setTimeout(() => {
+      if (!deleting && charIndex < currentText.length) {
+        setDisplayText((prev) => prev + currentText[charIndex]);
+        setCharIndex((prev) => prev + 1);
+      } else if (deleting && charIndex > 0) {
+        setDisplayText((prev) => prev.slice(0, -1));
+        setCharIndex((prev) => prev - 1);
+      } else {
+        setDeleting(!deleting);
+        if (!deleting) {
+          setTimeout(() => {
+            setIndex((prev) => (prev + 1) % texts.length);
+          }, 1000);
+        }
+      }
+    }, speed);
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+    return () => clearTimeout(timer);
+  }, [deleting, charIndex, index, texts, speed]);
+
+  return displayText;
 }
 
-export function useTheme() {
-  return useContext(ThemeContext);
-}
-
+/* -------------------------
+   Fancy Button & Keyframes
+-------------------------- */
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -46,369 +65,63 @@ const fadeIn = keyframes`
   }
 `;
 
-const typingTexts = [
-  "We make it easy to brand you...",
-  "Helping you stand out in the job market...",
-  "Your AI-powered resume assistant...",
-];
-
-const TypingEffect = () => {
-  const [text, setText] = useState("");
-  const [index, setIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [deleting, setDeleting] = useState(false);
-
-  useEffect(() => {
-    const timeout = setTimeout(
-      () => {
-        if (!deleting && charIndex < typingTexts[index].length) {
-          setText((prev) => prev + typingTexts[index][charIndex]);
-          setCharIndex((prev) => prev + 1);
-        } else if (deleting && charIndex > 0) {
-          setText((prev) => prev.slice(0, -1));
-          setCharIndex((prev) => prev - 1);
-        } else {
-          setDeleting(!deleting);
-          if (!deleting) {
-            setTimeout(
-              () => setIndex((prev) => (prev + 1) % typingTexts.length),
-              1000
-            );
-          }
-        }
-      },
-      deleting ? 100 : 100
-    );
-
-    return () => clearTimeout(timeout);
-  }, [text, deleting, charIndex, index]);
-
-  const { theme } = useTheme(); // Get the current theme
-  return <Headline theme={theme}>{text}|</Headline>;
-};
-
-// --------------------
-// Animations (as before)
-// --------------------
-const float = keyframes`
-  0% {
-    transform: translateY(0) rotate(5deg);
-  }
-  50% {
-    transform: translateY(-15px) rotate(5deg);
-  }
-  100% {
-    transform: translateY(0) rotate(5deg);
-  }
-`;
-
-const floatMiddle = keyframes`
-  0% {
-    transform: translateY(0) rotate(-3deg);
-  }
-  50% {
-    transform: translateY(-25px) rotate(-3deg);
-  }
-  100% {
-    transform: translateY(0) rotate(-3deg);
-  }
-`;
-
-const floatBottom = keyframes`
-  0% {
-    transform: translateY(0) rotate(2deg);
-  }
-  50% {
-    transform: translateY(-25px) rotate(2deg);
-  }
-  100% {
-    transform: translateY(0) rotate(2deg);
-  }
-`;
-
-// --------------------
-// Styled Components
-// --------------------
-const PageWrapper = styled.div`
-  position: relative;
-  overflow: hidden;
-  min-height: 100vh;
-  width: 100%;
-  background: ${(props) =>
-    props.theme === "dark"
-      ? "linear-gradient(135deg,rgb(82, 82, 170) 0%, #331f3f 100%)"
-      : "linear-gradient(135deg, #c2c1df 0%, #ffc0cb 100%)"};
-  font-family: Georgia, "Times New Roman", Times, serif;
-  transition: background 0.3s ease;
-`;
-
-// --------------------
-// Navigation Bar Styled Components
-// --------------------
-const NavBar = styled.nav`
+const ButtonGroup = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px 40px;
-  background: transparent;
-  z-index: 10;
-  position: relative;
-  width: 100%;
-
-  @media (max-width: 1200px) {
-    padding: 10px 30px; /* Reduce padding earlier */
-  }
-
-  @media (max-width: 1000px) {
-    padding: 8px 25px; /* Reduce further */
-  }
-
-  @media (max-width: 768px) {
-    padding: 6px 20px; /* Keep reducing */
-  }
-
-  @media (max-width: 600px) {
-    padding: 5px 15px; /* Smallest padding for mobile */
-  }
-`;
-
-const Logo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const LogoIcon = styled.span`
-  font-size: clamp(1.2rem, 2vw, 1.5rem);
-  color: ${(props) => (props.theme === "dark" ? "#f0f0f0" : "#fff")};
-  animation: ${fadeIn} 1s ease-in-out;
-`;
-
-const LogoText = styled.span`
-  font-size: 1.3rem;
-  font-weight: 700;
-  font-family: Georgia, "Times New Roman", Times, serif;
-  cursor: pointer;
-  padding: 6px 10px;
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
-  animation: ${fadeIn} 1s ease-in-out;
-  @media (max-width: 1000px) {
-    font-size: 1.2rem;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 1.1rem;
-  }
-`;
-
-const NavLinks = styled.div`
-  display: flex;
-  gap: 20px;
-
-  @media (max-width: 1200px) {
-    gap: 15px;
-  }
-  @media (max-width: 1000px) {
-    display: ${(props) => (props.menuOpen ? "flex" : "none")};
-    flex-direction: column;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.15); /* Semi-transparent white */
-    backdrop-filter: blur(10px); /* Glass effect */
-    padding: 20px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 100;
-    border-radius: 0 0 10px 10px; /* Slight round edges */
-  }
-`;
-
-// NavButton for the nav bar with smaller text and refined padding
-const NavButton = styled(Link)`
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
-  text-decoration: none;
-  font-size: 1rem;
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-family: Georgia, "Times New Roman", Times, serif;
-  transition: background 0.3s ease;
-  animation: ${fadeIn} 1s ease-in-out;
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-`;
-
-const MenuIcon = styled.div`
-  display: none;
-  font-size: 1.8rem;
-  cursor: pointer;
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
-
-  @media (max-width: 1000px) {
-    display: block;
-  }
-`;
-
-const CallToAction = styled.div`
-  display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   gap: 16px;
-`;
+  max-width: 500px;
 
-const ThemeToggle = styled.button`
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-  cursor: pointer;
-  color: ${(props) => (props.theme === "dark" ? "#f0f0f0" : "#fff")};
-  transition: transform 0.3s ease;
-  animation: ${fadeIn} 1s ease-in-out,
-
-  &:hover {
-    transform: scale(1.1);
-  }
-`;
-
-const ActionButton = styled.button`
-  background-color: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 8px 20px;
-  border-radius: 25px;
-  font-weight: 500;
-  color: #fff;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-  }
-`;
-
-// --------------------
-// Main Content Styled Components
-// --------------------
-const MainContent = styled.main`
-  display: flex;
-  padding: 40px;
-  min-height: calc(100vh - 80px);
-
-  @media (max-width: 1000px) {
-    flex-direction: row; /* Keep buttons on left, images on right */
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-
-  @media (max-width: 600px) {
-    flex-direction: row; /* KEEP IT SIDE-BY-SIDE ON SMALL SCREENS */
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-`;
-
-const LeftSection = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-left: 60px;
   @media (max-width: 768px) {
-    padding-left: 0;
-    align-items: left;
+    justify-content: center;
   }
 `;
 
-const Headline = styled.h2`
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
-  transition: color 0.3s ease;
-  animation: ${fadeIn} 1s ease-in-out;
-`;
-
-const BigText = styled.h1`
-  font-size: clamp(3rem, 5vw, 5rem);
-  font-weight: 800;
-  font-family: Georgia, "Times New Roman", Times, serif;
-  color: ${(props) => (props.theme === "dark" ? "#f0f0f0" : "#111")};
-  margin: 0 0 1.5rem 0;
-  line-height: 1;
-  text-shadow: 1px 1px 5px
-    ${(props) => (props.theme === "dark" ? "#f0f0f0" : "#111")};
-  animation: ${fadeIn} 1s ease-in-out;
-`;
-
-const Subheading = styled.p`
-  font-size: clamp(1rem, 1.5vw, 1.2rem);
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
-  margin-bottom: 2.5rem;
-  line-height: 1.6;
-  opacity: 0.9;
-  animation: ${fadeIn} 1s ease-in-out;
-`;
-
-// This StyledNavButton is used for the main button group (retaining your original button styling)
-const StyledNavButton = styled(Link)`
-  background-color: ${(props) =>
-    props.theme === "dark"
-      ? "rgba(255, 255, 255, 0.1)"
-      : "rgba(255, 255, 255, 0.15)"};
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
-  border: none;
-  padding: 12px 28px;
-  border-radius: 25px;
-  font-weight: 500;
-  font-size: 0.9rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: ${(props) =>
-      props.theme === "dark"
-        ? "rgba(255, 255, 255, 0.2)"
-        : "rgba(255, 255, 255, 0.25)"};
-    transform: translateY(-2px);
-  }
-`;
-
-const StyledButton = styled(Link)`
+const StyledFancyButton = styled.a`
   .Btn-Container {
     display: flex;
     width: auto;
     min-width: 9em;
     height: 3em;
-    background-color: #1d2129;
+    background-color: rgb(168, 85, 247);
     border-radius: 40px;
-    box-shadow: 0px 5px 10px
-      ${(props) => (props.theme === "dark" ? "#ffffff" : "#1e1e2e")};
+    /* Updated shadow to match Match Analysis style */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2),
+      0 10px 10px -5px rgba(0, 0, 0, 0.1);
     justify-content: space-between;
     align-items: center;
-    border: none;
+    border: 1px solid ${(props) => (props.darkMode ? "#ffffff" : "#1e1e2e")};
     cursor: pointer;
     font-size: 0.95rem;
-    border: 1px solid
-      ${(props) => (props.theme === "dark" ? "#ffffff" : "#1e1e2e")};
     animation: ${fadeIn} 1s ease-in-out;
+
+    @media (max-width: 480px) {
+      min-width: 100%;
+      height: 2.5em;
+      font-size: 0.85rem;
+    }
   }
+
   .icon-Container {
     width: 45px;
     height: 45px;
-    background-color: ${(props) =>
-      props.theme === "dark" ? "#ffffff" : "#ffffff"};
+    background-color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    border: 3px solid #1d2129;
-    border: 1px solid
-      ${(props) => (props.theme === "dark" ? "#ffffff" : "#1e1e2e")};
+    border: 1px solid ${(props) => (props.darkMode ? "#ffffff" : "#1e1e2e")};
+    min-width: 45px;
+
+    @media (max-width: 480px) {
+      width: 35px;
+      min-width: 35px;
+      height: 35px;
+    }
   }
+
   .text {
-    width: calc(170px - 45px);
+    width: calc(100% - 60px);
     height: 100%;
     display: flex;
     align-items: center;
@@ -416,15 +129,31 @@ const StyledButton = styled(Link)`
     color: white;
     font-size: 0.8em;
     letter-spacing: 1.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 20px;
+
+    @media (max-width: 480px) {
+      font-size: 0.75em;
+      padding-left: 5px;
+    }
   }
+
   .icon-Container svg {
     transition-duration: 1.5s;
-    color: white;
+    color: #8b5cf6;
+
+    @media (max-width: 480px) {
+      transform: scale(0.8);
+    }
   }
+
   .Btn-Container:hover .icon-Container svg {
     transition-duration: 1.5s;
     animation: arrow 1s linear infinite;
   }
+
   @keyframes arrow {
     0% {
       opacity: 0;
@@ -437,27 +166,9 @@ const StyledButton = styled(Link)`
   }
 `;
 
-const ButtonGroup = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  width: 100%;
-  max-width: 500px;
-
-  @media (max-width: 1000px) {
-    flex-direction: row;
-    justify-content: flex-start; /* Align buttons to left */
-  }
-
-  @media (max-width: 600px) {
-    flex-direction: column; /* Stack vertically only on small screens */
-  }
-`;
-
-const FancyButton = ({ to, children }) => {
-  const { theme } = useTheme();
+function FancyButton({ to, darkMode, children }) {
   return (
-    <StyledButton to={to} theme={theme}>
+    <StyledFancyButton href={to} darkMode={darkMode}>
       <button className="Btn-Container">
         <span className="text">{children}</span>
         <span className="icon-Container">
@@ -465,250 +176,570 @@ const FancyButton = ({ to, children }) => {
             width={16}
             height={19}
             viewBox="0 0 16 19"
-            fill="nones"
+            fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <circle cx="1.61321" cy="1.61321" r="1.5" fill="black" />
-            <circle cx="5.73583" cy="1.61321" r="1.5" fill="black" />
-            <circle cx="5.73583" cy="5.5566" r="1.5" fill="black" />
-            <circle cx="9.85851" cy="5.5566" r="1.5" fill="black" />
-            <circle cx="9.85851" cy="9.5" r="1.5" fill="black" />
-            <circle cx="13.9811" cy="9.5" r="1.5" fill="black" />
-            <circle cx="5.73583" cy="13.4434" r="1.5" fill="black" />
-            <circle cx="9.85851" cy="13.4434" r="1.5" fill="black" />
-            <circle cx="1.61321" cy="17.3868" r="1.5" fill="black" />
-            <circle cx="5.73583" cy="17.3868" r="1.5" fill="black" />
+            <circle cx="1.61321" cy="1.61321" r="1.5" fill="#8b5cf6" />{" "}
+            <circle cx="5.73583" cy="1.61321" r="1.5" fill="#8b5cf6" />{" "}
+            <circle cx="5.73583" cy="5.5566" r="1.5" fill="#8b5cf6" />{" "}
+            <circle cx="9.85851" cy="5.5566" r="1.5" fill="#8b5cf6" />{" "}
+            <circle cx="9.85851" cy="9.5" r="1.5" fill="#8b5cf6" />{" "}
+            <circle cx="13.9811" cy="9.5" r="1.5" fill="#8b5cf6" />{" "}
+            <circle cx="5.73583" cy="13.4434" r="1.5" fill="#8b5cf6" />{" "}
+            <circle cx="9.85851" cy="13.4434" r="1.5" fill="#8b5cf6" />{" "}
+            <circle cx="1.61321" cy="17.3868" r="1.5" fill="#8b5cf6" />{" "}
+            <circle cx="5.73583" cy="17.3868" r="1.5" fill="#8b5cf6" />{" "}
           </svg>
         </span>
       </button>
-    </StyledButton>
+    </StyledFancyButton>
   );
-};
+}
 
-const RightSection = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
+/* -------------------------
+   Floating Images Keyframes & Styled Components
+-------------------------- */
+const float = keyframes`
+  0% { transform: translateY(0) rotate(5deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+  100% { transform: translateY(0) rotate(5deg); }
+`;
+
+const floatMiddle = keyframes`
+  0% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-25px) rotate(-3deg); }
+  100% { transform: translateY(0) rotate(-3deg); }
+`;
+
+const floatBottom = keyframes`
+  0% { transform: translateY(0) rotate(2deg); }
+  50% { transform: translateY(-25px) rotate(2deg); }
+  100% { transform: translateY(0) rotate(2deg); }
+`;
+
+const ImagesContainer = styled.div`
   position: relative;
+  width: 100%;
+  min-height: 400px;
 
   @media (max-width: 1000px) {
-    justify-content: flex-end;
-    align-items: center;
-    width: 50%; /* Ensures it remains on the right */
+    min-height: 350px;
   }
 
-  @media (max-width: 600px) {
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+  @media (max-width: 768px) {
+    min-height: 280px;
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 480px) {
+    min-height: 400px;
   }
 `;
 
-const ResumeTopImage = styled.img`
+const ImageTop = styled.img`
   position: absolute;
-  top: 20px;
-  right: 40px;
-  width: 250px;
-  height: auto;
-  box-shadow: 0 10px 25px
-    ${(props) =>
-      props.theme === "dark"
-        ? "rgba(252, 250, 250, 0.6)"
-        : "rgba(0, 0, 0, 0.6)"};
-  border-radius: 4px;
-  background-color: #fff;
-  animation: ${fadeIn} 1s ease-in-out, ${float} 6s ease-in-out infinite;
-  transform: rotate(5deg);
-  z-index: 1;
-  @media (max-width: 1000px) {
-    width: 220px; /* Smaller at 1000px */
-    right: 0px;
-    top: 40px;
-  }
-
-  @media (max-width: 600px) {
-    width: 180px; /* Even smaller at 600px */
-    right: 0px;
-    top: 120px;
-  }
-`;
-
-const ResumeMiddleImage = styled.img`
-  position: absolute;
-  top: 150px;
-  right: 120px;
+  top: 10px;
+  right: 0px;
   width: 270px;
   height: auto;
   box-shadow: 0 10px 25px
     ${(props) =>
-      props.theme === "dark"
-        ? "rgba(252, 250, 250, 0.6)"
-        : "rgba(0, 0, 0, 0.6)"};
+      props.darkMode ? "rgba(252, 250, 250, 0.6)" : "rgba(0, 0, 0, 0.6)"};
+  border-radius: 4px;
+  background-color: #fff;
+  animation: ${fadeIn} 1s ease-in-out, ${float} 6s ease-in-out infinite;
+  transform: rotate(5deg);
+  z-index: 3;
+
+  @media (max-width: 1100px) {
+    width: 250px;
+    right: 0;
+    top: 20px;
+  }
+
+  @media (max-width: 1023px) {
+    width: 200px;
+    right: 12%;
+    top: 35px;
+  }
+
+  @media (max-width: 900px) {
+    width: 200px;
+    right: 5%;
+  }
+
+  @media (max-width: 768px) {
+    width: 180px;
+    right: 5%;
+    top: 0;
+  }
+
+  @media (max-width: 480px) {
+    width: 160px;
+    right: 5%;
+  }
+`;
+
+const ImageMiddle = styled.img`
+  position: absolute;
+  top: 190px;
+  right: 110px;
+  width: 280px;
+  height: auto;
+  box-shadow: 0 10px 25px
+    ${(props) =>
+      props.darkMode ? "rgba(252, 250, 250, 0.6)" : "rgba(0, 0, 0, 0.6)"};
   border-radius: 4px;
   background-color: #fff;
   animation: ${fadeIn} 1s ease-in-out, ${floatMiddle} 7s ease-in-out infinite;
   transform: rotate(-3deg);
   z-index: 2;
-  @media (max-width: 1000px) {
-    width: 220px; /* Smaller at 1000px */
-    right: 50px;
-    top: 200px;
+
+  @media (max-width: 1100px) {
+    width: 260px;
+    right: 60px;
+    top: 230px;
   }
 
-  @media (max-width: 600px) {
-    width: 180px; /* Even smaller at 600px */
-    right: 30px;
-    top: 240px;
+  @media (max-width: 1023px) {
+    width: 200px;
+    right: 37%;
+    top: 100px;
+  }
+
+  @media (max-width: 900px) {
+    width: 200px;
+    right: 35%;
+  }
+
+  @media (max-width: 768px) {
+    width: 180px;
+    right: 32.5%;
+    top: 30px;
+  }
+
+  @media (max-width: 480px) {
+    width: 160px;
+    right: 35%;
   }
 `;
 
-const ResumeBottomImage = styled.img`
+const ImageBottom = styled.img`
   position: absolute;
-  top: 290px;
-  right: 180px;
-  width: 280px;
+  top: 350px;
+  right: 220px;
+  width: 290px;
   height: auto;
   box-shadow: 0 10px 25px
     ${(props) =>
-      props.theme === "dark"
-        ? "rgba(252, 250, 250, 0.6)"
-        : "rgba(0, 0, 0, 0.6)"};
+      props.darkMode ? "rgba(252, 250, 250, 0.6)" : "rgba(0, 0, 0, 0.6)"};
   border-radius: 4px;
   background-color: #fff;
   animation: ${fadeIn} 1s ease-in-out, ${floatBottom} 8s ease-in-out infinite;
   transform: rotate(2deg);
-  z-index: 3;
-  @media (max-width: 1000px) {
-    width: 220px; /* Smaller at 1000px */
-    right: 100px;
-    top: 340px;
+  z-index: 1;
+
+  @media (max-width: 1100px) {
+    width: 270px;
+    right: 120px;
+    top: 410px;
   }
 
-  @media (max-width: 600px) {
-    width: 180px; /* Even smaller at 600px */
-    right: 70px;
-    top: 370px;
+  @media (max-width: 1023px) {
+    width: 200px;
+    right: 62%;
+    top: 35px;
+  }
+
+  @media (max-width: 900px) {
+    width: 200px;
+    right: 65%;
+  }
+
+  @media (max-width: 768px) {
+    width: 180px;
+    right: 60%;
+    top: 0px;
+  }
+
+  @media (max-width: 480px) {
+    width: 160px;
+    right: 10%;
   }
 `;
 
-// --------------------
-// HomePage Component (with updated six buttons)
-// --------------------
-const HomePage = () => {
-  const { theme, setTheme } = useTheme();
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
-
-  return (
-    <PageWrapper theme={theme}>
-      <NavBar>
-        <Logo>
-          <LogoIcon theme={theme}>📝</LogoIcon>
-          <LogoText theme={theme}>ResuMate</LogoText>
-        </Logo>
-
-        <MenuIcon onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? <FiX /> : <FiMenu />}
-        </MenuIcon>
-
-        {/* Navigation Bar using NavButton styled for a nav look */}
-        <NavLinks menuOpen={menuOpen} theme={theme}>
-          <NavButton to="/search" theme={theme}>
-            Search Postings
-          </NavButton>
-          <NavButton to="/curated-jobs" theme={theme}>
-            Jobs For You
-          </NavButton>
-          <NavButton to="/match-check" theme={theme}>
-            Check Match
-          </NavButton>
-          <NavButton to="/resume-improve" theme={theme}>
-            Improve Resume
-          </NavButton>
-          <NavButton to="/job-recommend" theme={theme}>
-            Job Recommender
-          </NavButton>
-          <NavButton to="/interview-process" theme={theme}>
-            Interview Process
-          </NavButton>
-        </NavLinks>
-
-        <CallToAction>
-          <ThemeToggle onClick={toggleTheme} theme={theme}>
-            {theme === "light" ? "🌙" : "🌞"}
-          </ThemeToggle>
-        </CallToAction>
-      </NavBar>
-
-      <MainContent>
-        <LeftSection>
-          <Headline theme={theme}>
-            <TypingEffect />
-          </Headline>
-          <BigText theme={theme}>ResuMate</BigText>
-          <Subheading theme={theme}>
-            Elevate & streamline your job hunting process.
-            <br />
-            Helping you stand out among thousands of other applicants.
-          </Subheading>
-
-          <ButtonGroup>
-            <FancyButton to="/search" theme={theme}>
-              Search Postings
-            </FancyButton>
-            <FancyButton to="/curated-jobs" theme={theme}>
-              Jobs For You
-            </FancyButton>
-            <FancyButton to="/match-check" theme={theme}>
-              Check Match
-            </FancyButton>
-            <FancyButton to="/resume-improve" theme={theme}>
-              Improve Resume
-            </FancyButton>
-            <FancyButton to="/job-recommend" theme={theme}>
-              Job Recommender
-            </FancyButton>
-            <FancyButton to="/interview-process" theme={theme}>
-              Interview Process
-            </FancyButton>
-          </ButtonGroup>
-        </LeftSection>
-
-        <RightSection>
-          <ResumeTopImage
-            theme={theme}
-            src={resumeImage1}
-            alt="Resume Template 1"
-          />
-          <ResumeMiddleImage
-            theme={theme}
-            src={resumeImage2}
-            alt="Resume Template 2"
-          />
-          <ResumeBottomImage
-            theme={theme}
-            src={resumeImage3}
-            alt="Resume Template 3"
-          />
-        </RightSection>
-      </MainContent>
-    </PageWrapper>
-  );
+/* -------------------------
+   Framer Motion Variants
+-------------------------- */
+const featureVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 100, damping: 15 },
+  },
 };
 
-// --------------------
-// App Component
-// --------------------
-const App = () => {
-  return (
-    <ThemeProvider>
-      <HomePage />
-    </ThemeProvider>
+export default function HomePage() {
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("theme") === "dark"
   );
-};
+  const typedText = useTypedText(typingTexts, 100);
+  const [showGlowEffect, setShowGlowEffect] = useState(false);
 
-export default App;
+  useEffect(() => {
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  useEffect(() => {
+    setShowGlowEffect(true);
+
+    const createParticles = () => {
+      const container = document.getElementById("particle-container");
+      if (!container) return;
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement("div");
+        particle.className = "absolute rounded-full bg-white opacity-20 z-0";
+        const size = Math.random() * 10 + 5;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        const duration = Math.random() * 15 + 15;
+        particle.style.animation = `float ${duration}s ease-in-out infinite`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        container.appendChild(particle);
+      }
+    };
+    createParticles();
+
+    return () => {
+      const container = document.getElementById("particle-container");
+      if (container) container.innerHTML = "";
+    };
+  }, []);
+
+  const toggleTheme = () => setDarkMode((prev) => !prev);
+
+  return (
+    <div
+      className={`flex flex-col min-h-screen relative w-full overflow-hidden transition-all duration-500 ${
+        darkMode ? "bg-gray-900 text-white" : ""
+      }`}
+    >
+      {/* Particle container */}
+      <div
+        id="particle-container"
+        className="absolute inset-0 overflow-hidden pointer-events-none"
+      />
+      {/* Gradient background & animated blobs */}
+      <div
+        className={`absolute inset-0 transition-all duration-1000 ${
+          darkMode
+            ? "bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800"
+            : "bg-gradient-to-br from-purple-100 via-pink-100 to-rose-100"
+        }`}
+      >
+        <motion.div
+          className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl -z-10 ${
+            darkMode ? "bg-purple-700" : "bg-purple-300"
+          } opacity-20`}
+          animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
+          transition={{ duration: 20, repeat: Infinity, repeatType: "mirror" }}
+        />
+        <motion.div
+          className={`absolute top-2/3 right-1/4 w-80 h-80 rounded-full blur-3xl -z-10 ${
+            darkMode ? "bg-blue-700" : "bg-blue-300"
+          } opacity-20`}
+          animate={{ x: [0, -70, 0], y: [0, 40, 0] }}
+          transition={{ duration: 18, repeat: Infinity, repeatType: "mirror" }}
+        />
+        <motion.div
+          className={`absolute bottom-1/4 right-1/3 w-64 h-64 rounded-full blur-3xl -z-10 ${
+            darkMode ? "bg-rose-700" : "bg-rose-300"
+          } opacity-20`}
+          animate={{ x: [0, 60, 0], y: [0, -30, 0] }}
+          transition={{ duration: 15, repeat: Infinity, repeatType: "mirror" }}
+        />
+      </div>
+
+      {/* Glow effect */}
+      <motion.div
+        className="absolute inset-0 opacity-0 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showGlowEffect ? 0.1 : 0 }}
+        transition={{ duration: 2 }}
+        style={{
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%)",
+        }}
+      />
+
+      {/* Navbar */}
+      <Navbar darkMode={darkMode} setDarkMode={toggleTheme} />
+
+      {/* Main Content */}
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 relative z-10">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Section: Text & Buttons */}
+          <div className="w-full lg:w-1/2 flex flex-col justify-center">
+            <h2 className="text-xl text-purple-600 font-medium mb-2">
+              {typedText}|
+            </h2>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 md:mb-6 flex items-center">
+              <span
+                className={`${darkMode ? "text-white" : "text-black"} mr-1`}
+              >
+                Resu
+              </span>
+              <span className="text-purple-500">Mate</span>
+            </h1>
+            <p
+              className={`text-md mb-6 md:mb-8 ${
+                darkMode ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
+              ResuMate uses advanced AI to analyze your resume against job
+              descriptions, providing personalized recommendations to increase
+              your match rate by up to 60%. Our platform helps you optimize
+              keywords, highlight relevant skills, and format your resume to
+              pass through ATS systems with ease. Say goodbye to generic
+              applications and hello to tailored job matches.
+            </p>
+
+            {/* Floating Images for Mobile */}
+            <div className="lg:hidden w-full mb-8">
+              <ImagesContainer>
+                <ImageTop
+                  src={resumeImage1}
+                  alt="Resume Template 1"
+                  darkMode={darkMode}
+                />
+                <ImageMiddle
+                  src={resumeImage2}
+                  alt="Resume Template 2"
+                  darkMode={darkMode}
+                />
+                <ImageBottom
+                  src={resumeImage3}
+                  alt="Resume Template 3"
+                  darkMode={darkMode}
+                />
+              </ImagesContainer>
+            </div>
+
+            {/* Feature Boxes with Framer Motion and updated shadow */}
+            <motion.div
+              className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3"
+              initial="hidden"
+              animate="visible"
+              variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
+            >
+              <motion.div
+                variants={featureVariants}
+                className={`p-3 rounded-lg ${
+                  darkMode
+                    ? "bg-gray-800 bg-opacity-50"
+                    : "bg-white bg-opacity-70"
+                } backdrop-blur-sm flex flex-col shadow-2xl`}
+              >
+                <h3
+                  className={`text-base font-semibold ${
+                    darkMode ? "text-purple-300" : "text-purple-700"
+                  }`}
+                >
+                  Search Postings
+                </h3>
+                <p
+                  className={`${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  } text-sm mb-2`}
+                >
+                  Browse thousands of job listings filtered by industry,
+                  location, and experience level.
+                </p>
+                <div className="mt-auto">
+                  <FancyButton to="/search" darkMode={darkMode}>
+                    Search Postings
+                  </FancyButton>
+                </div>
+              </motion.div>
+
+              <motion.div
+                variants={featureVariants}
+                className={`p-3 rounded-lg ${
+                  darkMode
+                    ? "bg-gray-800 bg-opacity-50"
+                    : "bg-white bg-opacity-70"
+                } backdrop-blur-sm flex flex-col shadow-2xl`}
+              >
+                <h3
+                  className={`text-base font-semibold ${
+                    darkMode ? "text-purple-300" : "text-purple-700"
+                  }`}
+                >
+                  Jobs For You
+                </h3>
+                <p
+                  className={`${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  } text-sm mb-2`}
+                >
+                  Access positions that match your profile, skills, and career
+                  goals.
+                </p>
+                <div className="mt-auto">
+                  <FancyButton to="/curated-jobs" darkMode={darkMode}>
+                    Jobs For You
+                  </FancyButton>
+                </div>
+              </motion.div>
+
+              <motion.div
+                variants={featureVariants}
+                className={`p-3 rounded-lg ${
+                  darkMode
+                    ? "bg-gray-800 bg-opacity-50"
+                    : "bg-white bg-opacity-70"
+                } backdrop-blur-sm flex flex-col shadow-2xl`}
+              >
+                <h3
+                  className={`text-base font-semibold ${
+                    darkMode ? "text-purple-300" : "text-purple-700"
+                  }`}
+                >
+                  Check Match
+                </h3>
+                <p
+                  className={`${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  } text-sm mb-2`}
+                >
+                  Upload resume and job description to see match percentage.
+                </p>
+                <div className="mt-auto">
+                  <FancyButton to="/match-check" darkMode={darkMode}>
+                    Check Match
+                  </FancyButton>
+                </div>
+              </motion.div>
+
+              <motion.div
+                variants={featureVariants}
+                className={`p-3 rounded-lg ${
+                  darkMode
+                    ? "bg-gray-800 bg-opacity-50"
+                    : "bg-white bg-opacity-70"
+                } backdrop-blur-sm flex flex-col shadow-2xl`}
+              >
+                <h3
+                  className={`text-base font-semibold ${
+                    darkMode ? "text-purple-300" : "text-purple-700"
+                  }`}
+                >
+                  Improve Resume
+                </h3>
+                <p
+                  className={`${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  } text-sm mb-2`}
+                >
+                  Get personalized suggestions to enhance your resume with
+                  tailored keywords.
+                </p>
+                <div className="mt-auto">
+                  <FancyButton to="/resume-improve" darkMode={darkMode}>
+                    Improve Resume
+                  </FancyButton>
+                </div>
+              </motion.div>
+
+              <motion.div
+                variants={featureVariants}
+                className={`p-3 rounded-lg ${
+                  darkMode
+                    ? "bg-gray-800 bg-opacity-50"
+                    : "bg-white bg-opacity-70"
+                } backdrop-blur-sm flex flex-col shadow-2xl`}
+              >
+                <h3
+                  className={`text-base font-semibold ${
+                    darkMode ? "text-purple-300" : "text-purple-700"
+                  }`}
+                >
+                  Job Recommender
+                </h3>
+                <p
+                  className={`${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  } text-sm mb-2`}
+                >
+                  Discover new career paths based on your experience and skills.
+                </p>
+                <div className="mt-auto">
+                  <FancyButton to="/job-recommend" darkMode={darkMode}>
+                    Job Recommender
+                  </FancyButton>
+                </div>
+              </motion.div>
+
+              <motion.div
+                variants={featureVariants}
+                className={`p-3 rounded-lg ${
+                  darkMode
+                    ? "bg-gray-800 bg-opacity-50"
+                    : "bg-white bg-opacity-70"
+                } backdrop-blur-sm flex flex-col shadow-2xl`}
+              >
+                <h3
+                  className={`text-base font-semibold ${
+                    darkMode ? "text-purple-300" : "text-purple-700"
+                  }`}
+                >
+                  Interview Process
+                </h3>
+                <p
+                  className={`${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  } text-sm mb-2`}
+                >
+                  Prepare with AI-generated practice questions and mock
+                  interviews.
+                </p>
+                <div className="mt-auto">
+                  <FancyButton to="/interview-process" darkMode={darkMode}>
+                    Interview Process
+                  </FancyButton>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+
+          {/* Right Section: Floating Images for Desktop */}
+          <div className="hidden lg:block w-full lg:w-1/2">
+            <ImagesContainer>
+              <ImageTop
+                src={resumeImage1}
+                alt="Resume Template 1"
+                darkMode={darkMode}
+              />
+              <ImageMiddle
+                src={resumeImage2}
+                alt="Resume Template 2"
+                darkMode={darkMode}
+              />
+              <ImageBottom
+                src={resumeImage3}
+                alt="Resume Template 3"
+                darkMode={darkMode}
+              />
+            </ImagesContainer>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <Footer darkMode={darkMode} />
+    </div>
+  );
+}
