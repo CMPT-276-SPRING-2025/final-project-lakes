@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
-import ResumeButton from "../components/resumebutton";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "../components/Navbar"; // Import the Navbar component
-import Footer from "../components/Footer"; // Import the Footer component
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+
+// Make sure this path matches your actual directory structure
+// You may need to adjust this path based on your file organization
+import ResumeUploadArea from "../components/ResumeUploadArea";
 
 const OPENAI_API_KEY =
   "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";
@@ -59,14 +62,12 @@ const CuratedJobsPage = () => {
     };
   }, []);
 
-  // Callback function to handle parsed resume text
-  const handleResumeParsed = async (text) => {
+  // Callback function to handle parsed resume text - this is where ResumeButton will pass the data
+  const handleResumeParsed = async (text, fileName) => {
+    console.log("Resume parsed! Filename:", fileName);
     setLoading(true);
 
     try {
-      // Simulate a delay for better UX
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       // Extract keywords using OpenAI API
       const extractedKeywords = await extractKeywordsFromResume(text);
       setKeywords(extractedKeywords);
@@ -83,8 +84,17 @@ const CuratedJobsPage = () => {
 
   // Function to extract keywords using OpenAI API
   const extractKeywordsFromResume = async (resumeText) => {
-    // Implementation remains the same
-    // Simulated response for demo
+    // In a real implementation, you would call the OpenAI API here
+    // For now, we'll just return a simulated response
+
+    console.log(
+      "Extracting keywords from resume text:",
+      resumeText.substring(0, 100) + "..."
+    );
+
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     return [
       "JavaScript",
       "React",
@@ -96,8 +106,14 @@ const CuratedJobsPage = () => {
 
   // Function to fetch jobs using JSearch API
   const fetchJobsUsingKeywords = async (keywords) => {
-    // Implementation remains the same
-    // Simulated response for demo
+    // In a real implementation, you would call the JSearch API here
+    // For now, we'll just return a simulated response
+
+    console.log("Fetching jobs for keywords:", keywords);
+
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     return [
       {
         job_id: "1",
@@ -308,77 +324,13 @@ const CuratedJobsPage = () => {
                   Upload Your Resume
                 </h2>
 
-                <motion.div
-                  className={`flex flex-col items-center justify-center py-16 px-8 rounded-xl ${
-                    darkMode
-                      ? "bg-gray-700 bg-opacity-40 border border-gray-600"
-                      : "bg-gray-50 border-2 border-dashed border-gray-300"
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <motion.button
-                      className={`px-6 py-3 rounded-full ${
-                        darkMode
-                          ? "bg-purple-600 hover:bg-purple-700"
-                          : "bg-purple-500 hover:bg-purple-600"
-                      } text-white font-medium shadow-lg flex items-center space-x-2`}
-                      onClick={() => {
-                        // Simulate ResumeButton click
-                        handleResumeParsed(
-                          "Sample resume text for demonstration"
-                        );
-                      }}
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M16 16L12 12M12 12L8 16M12 12V21M20 16.7428C21.2215 15.734 22 14.2079 22 12.5C22 9.46243 19.5376 7 16.5 7C16.2815 7 16.0771 6.886 15.9661 6.69774C14.6621 4.48484 12.2544 3 9.5 3C5.35786 3 2 6.35786 2 10.5C2 12.5661 2.83545 14.4371 4.18695 15.7935"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <span>Upload Resume</span>
-                    </motion.button>
-                  </motion.div>
-
-                  {loading && (
-                    <motion.div
-                      className="mt-8 flex flex-col items-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <motion.div
-                        className="w-12 h-12 border-4 border-t-4 border-purple-500 border-t-transparent rounded-full"
-                        animate={{ rotate: 360 }}
-                        transition={{
-                          duration: 1,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
-                      />
-                      <p
-                        className={`mt-4 ${
-                          darkMode ? "text-gray-300" : "text-gray-600"
-                        }`}
-                      >
-                        Analyzing your resume...
-                      </p>
-                    </motion.div>
-                  )}
-                </motion.div>
+                {/* Using the ResumeUploadArea component */}
+                {/* If you still see errors, you might need to ensure the component is imported correctly */}
+                {/* and that all required dependencies (pdf.js, lucide-react, etc.) are installed */}
+                <ResumeUploadArea
+                  onResumeParsed={handleResumeParsed}
+                  darkMode={darkMode}
+                />
 
                 {/* Keywords section */}
                 <AnimatePresence>
