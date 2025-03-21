@@ -1,163 +1,29 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import ResumeButton from "../components/resumebutton.jsx";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import ResumeButton from "../components/ResumeButton.jsx";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
-// Styled Components
-const PageWrapper = styled.div`
-  position: relative;
-  min-height: 100vh;
-  width: 100%;
-  background: linear-gradient(135deg, #c2c1df 0%, #ffc0cb 100%);
-  font-family: Arial, sans-serif;
-  padding: 2rem;
-`;
-
-const ContentContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  background-color: white;
-  border-radius: 15px;
-  padding: 2.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-`;
-
-const PageTitle = styled.h1`
-  font-size: 2.5rem;
-  color: #333;
-  margin-bottom: 0.8rem;
-  font-weight: 600;
-`;
-
-const PageDescription = styled.p`
-  color: #666;
-  margin-bottom: 2.5rem;
-  font-size: 1rem;
-`;
-
-const ThreeColumns = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 1.5rem;
-
-  @media (max-width: 1000px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const Column = styled.div``;
-
-const SectionHeader = styled.div`
-  background: linear-gradient(90deg, #9370db 0%, #ff69b4 100%);
-  padding: 1rem;
-  border-radius: 10px;
-  margin-bottom: 1.5rem;
-  text-align: center;
-`;
-
-const SectionTitle = styled.h2`
-  color: white;
-  font-size: 1.3rem;
-  margin: 0;
-  font-weight: 500;
-`;
-
-const UploadButton = styled.button`
-  background-color: #4285f4;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.8rem 1.2rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
-  display: block;
-  margin-bottom: 1.5rem;
-  width: 100%;
-
-  &:hover {
-    background-color: #3367d6;
-  }
-`;
-
-const SubTitle = styled.h3`
-  color: #9370db;
-  font-size: 1.2rem;
-  margin: 1.5rem 0 1rem 0;
-  font-weight: 500;
-`;
-
-const InputField = styled.input`
-  width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 0.95rem;
-
-  &:focus {
-    outline: none;
-    border-color: #9370db;
-  }
-`;
-
-const TextArea = styled.textarea`
-  width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  min-height: ${(props) => (props.large ? "150px" : "100px")};
-  font-size: 0.95rem;
-  resize: vertical;
-
-  &:focus {
-    outline: none;
-    border-color: #9370db;
-  }
-`;
-
-const PurpleButton = styled.button`
-  background-color: #9370db;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.8rem 1.2rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
-  width: 100%;
-  text-transform: uppercase;
-
-  &:hover {
-    background-color: #8560c5;
-  }
-
-  &:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-`;
-
-const ResultContainer = styled.div`
-  background-color: white;
-  border-radius: 8px;
-  padding: 1rem;
-  min-height: 200px;
-  border: 1px solid #e0e0e0;
-  margin-bottom: 1.5rem;
-  color: #555;
-  font-size: 0.95rem;
-`;
-
-const FeedbackLabel = styled.h4`
-  color: #9370db;
-  font-size: 1rem;
-  margin: 0 0 0.8rem 0;
-`;
+// Variants for animations
+const cardVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 100, damping: 15 },
+  },
+};
 
 const ResumeImprovePage = () => {
+  // State for dark mode
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("theme") === "dark" ? true : false
+  );
+
+  // Particle and glow effect state
+  const [showGlowEffect, setShowGlowEffect] = useState(false);
+
+  // Form state
   const [jobDetails, setJobDetails] = useState({
     title: "",
     company: "",
@@ -171,6 +37,41 @@ const ResumeImprovePage = () => {
   const [resumeFeedback, setResumeFeedback] = useState("");
   const [coverLetterFeedback, setCoverLetterFeedback] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
+
+  // Toggle darkMode and persist to localStorage
+  useEffect(() => {
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  // Toggle theme function
+  const toggleTheme = () => setDarkMode((prev) => !prev);
+
+  // Particle and glow effects
+  useEffect(() => {
+    setShowGlowEffect(true);
+    const createParticles = () => {
+      const particleContainer = document.getElementById("particle-container");
+      if (!particleContainer) return;
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement("div");
+        particle.className = "absolute rounded-full bg-white opacity-20 z-0";
+        const size = Math.random() * 10 + 5;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        const duration = Math.random() * 15 + 15;
+        particle.style.animation = `float ${duration}s ease-in-out infinite`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        particleContainer.appendChild(particle);
+      }
+    };
+    createParticles();
+    return () => {
+      const particleContainer = document.getElementById("particle-container");
+      if (particleContainer) particleContainer.innerHTML = "";
+    };
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -229,107 +130,467 @@ const ResumeImprovePage = () => {
   };
 
   return (
-    <PageWrapper>
-      <ContentContainer>
-        <PageTitle>Improve Resume</PageTitle>
-        <PageDescription>
-          Upload your resume and job description to get AI-powered resume and
-          cover letter optimization.
-        </PageDescription>
+    <div
+      className={`${
+        darkMode ? "bg-gray-900 text-white" : ""
+      } relative min-h-screen w-full overflow-hidden transition-all duration-500`}
+    >
+      {/* Particle container */}
+      <div
+        id="particle-container"
+        className="absolute inset-0 overflow-hidden pointer-events-none"
+      />
 
-        <ThreeColumns>
-          <Column>
-            <SectionHeader>
-              <SectionTitle>Resume Upload</SectionTitle>
-            </SectionHeader>
+      {/* Gradient background and animated blobs */}
+      <div
+        className={`absolute inset-0 transition-all duration-1000 ${
+          darkMode
+            ? "bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800"
+            : "bg-gradient-to-br from-purple-100 via-pink-100 to-rose-100"
+        }`}
+      >
+        <motion.div
+          className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl -z-10 ${
+            darkMode ? "bg-purple-700" : "bg-purple-300"
+          } opacity-20`}
+          animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
+          transition={{ duration: 20, repeat: Infinity, repeatType: "mirror" }}
+        />
+        <motion.div
+          className={`absolute top-2/3 right-1/4 w-80 h-80 rounded-full blur-3xl -z-10 ${
+            darkMode ? "bg-blue-700" : "bg-blue-300"
+          } opacity-20`}
+          animate={{ x: [0, -70, 0], y: [0, 40, 0] }}
+          transition={{ duration: 18, repeat: Infinity, repeatType: "mirror" }}
+        />
+        <motion.div
+          className={`absolute bottom-1/4 right-1/3 w-64 h-64 rounded-full blur-3xl -z-10 ${
+            darkMode ? "bg-rose-700" : "bg-rose-300"
+          } opacity-20`}
+          animate={{ x: [0, 60, 0], y: [0, -30, 0] }}
+          transition={{ duration: 15, repeat: Infinity, repeatType: "mirror" }}
+        />
+      </div>
 
-            <UploadButton as={ResumeButton} onResumeParsed={handleResumeParsed}>
-              Upload Resume (PDF)
-            </UploadButton>
+      {/* Glow effect */}
+      <motion.div
+        className="absolute inset-0 opacity-0 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showGlowEffect ? 0.1 : 0 }}
+        transition={{ duration: 2 }}
+        style={{
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%)",
+        }}
+      />
 
-            <SubTitle>Job Details</SubTitle>
-            <InputField
-              type="text"
-              name="title"
-              value={jobDetails.title}
-              onChange={handleInputChange}
-              placeholder="Job Title"
-            />
-            <InputField
-              type="text"
-              name="company"
-              value={jobDetails.company}
-              onChange={handleInputChange}
-              placeholder="Company"
-            />
-            <InputField
-              type="text"
-              name="location"
-              value={jobDetails.location}
-              onChange={handleInputChange}
-              placeholder="Location"
-            />
-            <TextArea
-              name="description"
-              value={jobDetails.description}
-              onChange={handleInputChange}
-              placeholder="Job Description"
-              large
-            ></TextArea>
+      {/* Navbar */}
+      <Navbar darkMode={darkMode} setDarkMode={toggleTheme} />
 
-            <PurpleButton
-              onClick={generateResumeAndCoverLetter}
-              disabled={loading}
+      <main className="max-w-7xl mx-auto px-8 pt-8 pb-16 relative z-10">
+        {/* Page Heading */}
+        <motion.div
+          className="mb-16 text-center md:text-left"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <motion.h1
+            className={`text-5xl font-bold mb-4 ${
+              darkMode ? "text-white" : "text-black"
+            }`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            Improve Resume
+          </motion.h1>
+          <motion.p
+            className={`text-xl ${
+              darkMode ? "text-gray-300" : "text-gray-700"
+            } max-w-2xl mx-auto md:mx-0`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+          >
+            Upload your resume and job description to get AI-powered resume and
+            cover letter optimization.
+          </motion.p>
+        </motion.div>
+
+        {/* Three Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Column 1: Resume Upload */}
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.3 }}
+          >
+            <motion.div
+              className={`rounded-2xl overflow-hidden ${
+                darkMode
+                  ? "bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700"
+                  : "bg-white bg-opacity-70 backdrop-blur-lg border border-gray-100"
+              } shadow-xl mb-8`}
+              whileHover={{
+                y: -5,
+                boxShadow:
+                  "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              {loading ? "GENERATING..." : "GENERATE RESUME & COVER LETTER"}
-            </PurpleButton>
-          </Column>
+              <div className="p-6">
+                <h2
+                  className={`text-xl font-bold mb-6 text-center ${
+                    darkMode ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  Resume Upload
+                </h2>
 
-          <Column>
-            <SectionHeader>
-              <SectionTitle>Resume Generator</SectionTitle>
-            </SectionHeader>
+                <motion.div
+                  className={`flex flex-col items-center justify-center py-8 px-4 rounded-xl mb-6 ${
+                    darkMode
+                      ? "bg-gray-700 bg-opacity-40 border border-gray-600"
+                      : "bg-gray-50 border-2 border-dashed border-gray-300"
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <ResumeButton onResumeParsed={handleResumeParsed} />
+                  </motion.div>
+                  {uploadedFileName && (
+                    <p
+                      className={`mt-2 text-sm ${
+                        darkMode ? "text-gray-300" : "text-gray-600"
+                      }`}
+                    >
+                      Uploaded:{" "}
+                      <span className="font-medium">{uploadedFileName}</span>
+                    </p>
+                  )}
+                </motion.div>
 
-            <ResultContainer>
-              {generatedResume || "Your generated resume will appear here..."}
-            </ResultContainer>
+                <h3
+                  className={`text-lg font-semibold mb-4 ${
+                    darkMode ? "text-purple-300" : "text-purple-600"
+                  }`}
+                >
+                  Job Details
+                </h3>
 
-            <FeedbackLabel>Feedback for Resume</FeedbackLabel>
-            <TextArea
-              value={resumeFeedback}
-              onChange={(e) => setResumeFeedback(e.target.value)}
-              placeholder="Provide feedback to improve the resume..."
-            />
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    name="title"
+                    value={jobDetails.title}
+                    onChange={handleInputChange}
+                    placeholder="Job Title"
+                    className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
+                      darkMode
+                        ? "bg-gray-700 text-white border-gray-600"
+                        : "bg-gray-100 text-black border-gray-300"
+                    }`}
+                  />
+                  <input
+                    type="text"
+                    name="company"
+                    value={jobDetails.company}
+                    onChange={handleInputChange}
+                    placeholder="Company"
+                    className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
+                      darkMode
+                        ? "bg-gray-700 text-white border-gray-600"
+                        : "bg-gray-100 text-black border-gray-300"
+                    }`}
+                  />
+                  <input
+                    type="text"
+                    name="location"
+                    value={jobDetails.location}
+                    onChange={handleInputChange}
+                    placeholder="Location"
+                    className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
+                      darkMode
+                        ? "bg-gray-700 text-white border-gray-600"
+                        : "bg-gray-100 text-black border-gray-300"
+                    }`}
+                  />
+                  <textarea
+                    name="description"
+                    value={jobDetails.description}
+                    onChange={handleInputChange}
+                    placeholder="Job Description"
+                    rows="6"
+                    className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
+                      darkMode
+                        ? "bg-gray-700 text-white border-gray-600"
+                        : "bg-gray-100 text-black border-gray-300"
+                    }`}
+                  ></textarea>
+                </div>
 
-            <PurpleButton onClick={regenerateResume} disabled={loading}>
-              {loading ? "REGENERATING..." : "REGENERATE RESUME"}
-            </PurpleButton>
-          </Column>
+                <motion.button
+                  onClick={generateResumeAndCoverLetter}
+                  disabled={loading}
+                  className={`px-6 py-3 mt-6 rounded-full w-full ${
+                    darkMode
+                      ? "bg-purple-600 hover:bg-purple-700"
+                      : "bg-purple-500 hover:bg-purple-600"
+                  } text-white font-medium shadow-lg transition-transform flex items-center justify-center space-x-2`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {loading ? (
+                    <svg
+                      className="animate-spin h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    <span>Generate Resume & Cover Letter</span>
+                  )}
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
 
-          <Column>
-            <SectionHeader>
-              <SectionTitle>Cover Letter Generator</SectionTitle>
-            </SectionHeader>
+          {/* Column 2: Resume Generator */}
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.5 }}
+          >
+            <motion.div
+              className={`rounded-2xl overflow-hidden ${
+                darkMode
+                  ? "bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700"
+                  : "bg-white bg-opacity-70 backdrop-blur-lg border border-gray-100"
+              } shadow-xl mb-8`}
+              whileHover={{
+                y: -5,
+                boxShadow:
+                  "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              <div className="p-6">
+                <h2
+                  className={`text-xl font-bold mb-6 text-center ${
+                    darkMode ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  Resume Generator
+                </h2>
 
-            <ResultContainer>
-              {generatedCoverLetter ||
-                "Your generated cover letter will appear here..."}
-            </ResultContainer>
+                <div
+                  className={`rounded-xl p-4 min-h-[250px] mb-6 ${
+                    darkMode
+                      ? "bg-gray-700 bg-opacity-50 border border-gray-600"
+                      : "bg-white border border-gray-200"
+                  }`}
+                >
+                  <p
+                    className={`${
+                      darkMode ? "text-gray-300" : "text-gray-600"
+                    }`}
+                  >
+                    {generatedResume ||
+                      "Your generated resume will appear here..."}
+                  </p>
+                </div>
 
-            <FeedbackLabel>Feedback for Cover Letter</FeedbackLabel>
-            <TextArea
-              value={coverLetterFeedback}
-              onChange={(e) => setCoverLetterFeedback(e.target.value)}
-              placeholder="Provide feedback to improve the cover letter..."
-            />
+                <h3
+                  className={`text-lg font-semibold mb-4 ${
+                    darkMode ? "text-purple-300" : "text-purple-600"
+                  }`}
+                >
+                  Feedback for Resume
+                </h3>
 
-            <PurpleButton onClick={regenerateCoverLetter} disabled={loading}>
-              {loading ? "REGENERATING..." : "REGENERATE COVER LETTER"}
-            </PurpleButton>
-          </Column>
-        </ThreeColumns>
-      </ContentContainer>
-    </PageWrapper>
+                <textarea
+                  value={resumeFeedback}
+                  onChange={(e) => setResumeFeedback(e.target.value)}
+                  placeholder="Provide feedback to improve the resume..."
+                  rows="4"
+                  className={`w-full p-3 rounded-xl mb-6 focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
+                    darkMode
+                      ? "bg-gray-700 text-white border-gray-600"
+                      : "bg-gray-100 text-black border-gray-300"
+                  }`}
+                ></textarea>
+
+                <motion.button
+                  onClick={regenerateResume}
+                  disabled={loading}
+                  className={`px-6 py-3 rounded-full w-full ${
+                    darkMode
+                      ? "bg-purple-600 hover:bg-purple-700"
+                      : "bg-purple-500 hover:bg-purple-600"
+                  } text-white font-medium shadow-lg transition-transform flex items-center justify-center space-x-2`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {loading ? (
+                    <svg
+                      className="animate-spin h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    <span>Regenerate Resume</span>
+                  )}
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Column 3: Cover Letter Generator */}
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.7 }}
+          >
+            <motion.div
+              className={`rounded-2xl overflow-hidden ${
+                darkMode
+                  ? "bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700"
+                  : "bg-white bg-opacity-70 backdrop-blur-lg border border-gray-100"
+              } shadow-xl mb-8`}
+              whileHover={{
+                y: -5,
+                boxShadow:
+                  "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              <div className="p-6">
+                <h2
+                  className={`text-xl font-bold mb-6 text-center ${
+                    darkMode ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  Cover Letter Generator
+                </h2>
+
+                <div
+                  className={`rounded-xl p-4 min-h-[250px] mb-6 ${
+                    darkMode
+                      ? "bg-gray-700 bg-opacity-50 border border-gray-600"
+                      : "bg-white border border-gray-200"
+                  }`}
+                >
+                  <p
+                    className={`${
+                      darkMode ? "text-gray-300" : "text-gray-600"
+                    }`}
+                  >
+                    {generatedCoverLetter ||
+                      "Your generated cover letter will appear here..."}
+                  </p>
+                </div>
+
+                <h3
+                  className={`text-lg font-semibold mb-4 ${
+                    darkMode ? "text-purple-300" : "text-purple-600"
+                  }`}
+                >
+                  Feedback for Cover Letter
+                </h3>
+
+                <textarea
+                  value={coverLetterFeedback}
+                  onChange={(e) => setCoverLetterFeedback(e.target.value)}
+                  placeholder="Provide feedback to improve the cover letter..."
+                  rows="4"
+                  className={`w-full p-3 rounded-xl mb-6 focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
+                    darkMode
+                      ? "bg-gray-700 text-white border-gray-600"
+                      : "bg-gray-100 text-black border-gray-300"
+                  }`}
+                ></textarea>
+
+                <motion.button
+                  onClick={regenerateCoverLetter}
+                  disabled={loading}
+                  className={`px-6 py-3 rounded-full w-full ${
+                    darkMode
+                      ? "bg-purple-600 hover:bg-purple-700"
+                      : "bg-purple-500 hover:bg-purple-600"
+                  } text-white font-medium shadow-lg transition-transform flex items-center justify-center space-x-2`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {loading ? (
+                    <svg
+                      className="animate-spin h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    <span>Regenerate Cover Letter</span>
+                  )}
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </main>
+
+      <Footer darkMode={darkMode} />
+    </div>
   );
 };
 
