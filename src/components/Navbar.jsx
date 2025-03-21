@@ -67,7 +67,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
             { label: "Jobs For You", path: "/curated-jobs" },
             { label: "Check Match", path: "/match-check" },
             { label: "Improve Resume", path: "/resume-improve" },
-            { label: "Job Recommender", path: "/job-recommend" },
+     
             { label: "Interview Process", path: "/interview-process" },
           ].map((item, index) => (
             <motion.div

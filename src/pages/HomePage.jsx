@@ -667,35 +667,6 @@ export default function HomePage() {
                     darkMode ? "text-purple-300" : "text-purple-700"
                   }`}
                 >
-                  Job Recommender
-                </h3>
-                <p
-                  className={`${
-                    darkMode ? "text-gray-300" : "text-gray-700"
-                  } text-sm mb-2`}
-                >
-                  Discover new career paths based on your experience and skills.
-                </p>
-                <div className="mt-auto">
-                  <FancyButton to="/job-recommend" darkMode={darkMode}>
-                    Job Recommender
-                  </FancyButton>
-                </div>
-              </motion.div>
-
-              <motion.div
-                variants={featureVariants}
-                className={`p-3 rounded-lg ${
-                  darkMode
-                    ? "bg-gray-800 bg-opacity-50"
-                    : "bg-white bg-opacity-70"
-                } backdrop-blur-sm flex flex-col shadow-2xl`}
-              >
-                <h3
-                  className={`text-base font-semibold ${
-                    darkMode ? "text-purple-300" : "text-purple-700"
-                  }`}
-                >
                   Interview Process
                 </h3>
                 <p

@@ -41,7 +41,9 @@ const InterviewProcess = () => {
 
     return lines.map((line, index) => {
       // Skip lines that start with "LeetCode is a great resource"
-      if (line.trim().toLowerCase().startsWith("leetcode is a great resource")) {
+      if (
+        line.trim().toLowerCase().startsWith("leetcode is a great resource")
+      ) {
         return null; // Omit this line from rendering
       }
       // Bold lines that look like a question: "1. Question:", "2. Question:", etc.
@@ -71,24 +73,26 @@ const InterviewProcess = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Replace with your actual API key or environment variable
-          Authorization: `Bearer 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`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a professional interview coach who provides the most common behavioral interview questions for a specified company and position, along with a brief rationale for why each question is asked.",
-            },
-            {
-              role: "user",
-              content: `
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Replace with your actual API key or environment variable
+            Authorization: `Bearer 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`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a professional interview coach who provides the most common behavioral interview questions for a specified company and position, along with a brief rationale for why each question is asked.",
+              },
+              {
+                role: "user",
+                content: `
                 The user is interviewing at ${company} for the ${position} role.
                 Salary: ${job.salary || "N/A"}
                 
@@ -103,10 +107,11 @@ const InterviewProcess = () => {
                 2. Explain briefly why each question is asked.
                 3. At the end, give a link to the relevant LeetCode resources (if any).
               `,
-            },
-          ],
-        }),
-      });
+              },
+            ],
+          }),
+        }
+      );
 
       const data = await response.json();
       if (data.choices && data.choices[0].message) {
@@ -114,14 +119,18 @@ const InterviewProcess = () => {
         setBehavioralQuestions(output);
 
         // Construct a dummy LeetCode link for the constant company
-        setLeetcodeLink(`https://leetcode.com/company/${company.toLowerCase()}`);
+        setLeetcodeLink(
+          `https://leetcode.com/company/${company.toLowerCase()}`
+        );
         setButtonText("Questions Generated");
       } else {
         throw new Error("Invalid response from OpenAI");
       }
     } catch (error) {
       console.error("Error generating interview questions:", error);
-      alert("Failed to generate interview questions. Check console for details.");
+      alert(
+        "Failed to generate interview questions. Check console for details."
+      );
       setButtonText("Generate Questions");
     } finally {
       setLoading(false);
@@ -136,17 +145,20 @@ const InterviewProcess = () => {
           Interview Process
         </h1>
         <p className="text-gray-700 mb-4">
-          Upload your resume (optional) for {company} and get behavioral questions for the{" "}
-          {position} role along with a relevant LeetCode link.
+          Upload your resume (optional) for {company} and get behavioral
+          questions for the {position} role along with a relevant LeetCode link.
         </p>
 
         {/* Resume Importer */}
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-indigo-700 mb-2">Upload Resume</h2>
+          <h2 className="text-2xl font-bold text-indigo-700 mb-2">
+            Upload Resume
+          </h2>
           <ResumeButton onResumeParsed={handleResumeParsed} />
           {uploadedFileName && (
             <p className="mt-2 text-sm text-gray-600">
-              Uploaded File: <span className="font-medium">{uploadedFileName}</span>
+              Uploaded File:{" "}
+              <span className="font-medium">{uploadedFileName}</span>
             </p>
           )}
         </div>

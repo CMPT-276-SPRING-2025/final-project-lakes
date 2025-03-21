@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
 import ResumeButton from "../components/ResumeButton.jsx";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -15,6 +16,11 @@ const cardVariants = {
 };
 
 const MatchAnalysisPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const job = location.state ? location.state.job : undefined;
+
   // Instead of "theme", use a boolean darkMode for consistency
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark" ? true : false
@@ -28,10 +34,10 @@ const MatchAnalysisPage = () => {
 
   // Your existing state and logic for resume analysis
   const [jobDetails, setJobDetails] = useState({
-    title: "",
-    company: "",
-    location: "",
-    description: "",
+    title: job ? `${job.job_title}` : "",
+    company: job ? `${job.employer_name}` : "",
+    location: job ? `${job.job_city}` : "",
+    description: job ? `${job.description}` : "",
   });
   const [resumeText, setResumeText] = useState("");
   const [matchRating, setMatchRating] = useState(null);
