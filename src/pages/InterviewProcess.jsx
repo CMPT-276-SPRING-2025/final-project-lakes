@@ -120,7 +120,7 @@ function InterviewProcessPage() {
         headers: {
           "Content-Type": "application/json",
           // Replace with your actual key:
-          Authorization: `Bearer YOUR_API_KEY_HERE`,
+          Authorization: `Bearer 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`,
         },
         body: JSON.stringify({
           model: "gpt-4",
