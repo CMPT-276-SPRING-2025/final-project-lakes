@@ -2,18 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { FiSearch, FiArrowRight } from "react-icons/fi";
-import { useTheme } from "../path-to-your-theme-provider"; // Adjust this path
+import { createGlobalStyle } from "styled-components";
 
-// Replace with your actual API key and hide it in .env file in production
-const API_KEY = process.env.REACT_APP_JSEARCH_API_KEY || "your-api-key";
-const options = {
-  method: "GET",
-  headers: {
-    "x-rapidapi-key": API_KEY,
-    "x-rapidapi-host": "jsearch.p.rapidapi.com",
-  },
-};
-
+// Sample data
 const jobResults_sample = [
   {
     job_id: 1,
@@ -62,6 +53,16 @@ const jobResults_sample = [
   },
 ];
 
+// API configuration
+const API_KEY = "9e4811e9f4msh79dc0327c602ff2p109aa4jsn6cee4b28e7fc sjsjjs";
+const options = {
+  method: "GET",
+  headers: {
+    "x-rapidapi-key": API_KEY,
+    "x-rapidapi-host": "jsearch.p.rapidapi.com",
+  },
+};
+
 // Animations
 const fadeIn = keyframes`
   from {
@@ -91,10 +92,7 @@ const PageWrapper = styled.div`
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background: ${(props) =>
-    props.theme === "dark"
-      ? "linear-gradient(135deg, rgb(82, 82, 170) 0%, #331f3f 100%)"
-      : "linear-gradient(135deg, #c2c1df 0%, #ffc0cb 100%)"};
+  background: linear-gradient(135deg, #c2c1df 0%, #ffc0cb 100%);
   font-family: Georgia, "Times New Roman", Times, serif;
   padding: 2rem;
   transition: background 0.3s ease;
@@ -134,20 +132,20 @@ const LogoIcon = styled.span`
 const LogoText = styled(Link)`
   font-size: 1.5rem;
   font-weight: 700;
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
+  color: #111;
   text-decoration: none;
 `;
 
 const Tagline = styled.p`
   font-size: 1rem;
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
+  color: #111;
   opacity: 0.8;
 `;
 
 const SearchTitle = styled.h2`
   font-size: 2rem;
   font-weight: 600;
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
+  color: #111;
   text-align: center;
   margin-bottom: 2rem;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
@@ -171,13 +169,13 @@ const FilterInput = styled.input`
   border: none;
   background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(5px);
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
+  color: #111;
   font-family: Georgia, "Times New Roman", Times, serif;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 
   &::placeholder {
-    color: ${(props) => (props.theme === "dark" ? "#cccccc" : "#555")};
+    color: #555;
     opacity: 0.7;
   }
 
@@ -191,12 +189,64 @@ const FilterInput = styled.input`
 const JobResultsHeader = styled.p`
   font-size: 1.2rem;
   font-weight: 600;
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
+  color: #111;
   margin-bottom: 1rem;
 `;
 
 const JobCardContainer = styled.div`
   margin-bottom: 1.5rem;
+`;
+
+const JobTitle = styled.h3`
+  font-size: 2rem; /* Larger for readability */
+  font-weight: 700; /* Bold */
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Helvetica Neue", Arial, sans-serif;
+  color: black;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.4px;
+`;
+
+const JobCompany = styled.p`
+  font-size: 1.2rem;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Helvetica Neue", Arial, sans-serif;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 0.5rem;
+`;
+
+const JobSalary = styled.p`
+  font-size: 1.1rem;
+  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Helvetica Neue", Arial, sans-serif;
+  color: rgba(0, 0, 0, 0.75);
+  margin-bottom: 1rem;
+`;
+
+const JobDescription = styled.p`
+  font-size: 1.1rem;
+  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Helvetica Neue", Arial, sans-serif;
+  color: rgba(0, 0, 0, 0.9);
+  line-height: 1.5;
+`;
+
+const ReadMoreButton = styled.button`
+  background: none;
+  border: none;
+  color: rgb(57, 0, 126);
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+`;
+const JobCardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 `;
 
 const JobCard = styled.div`
@@ -207,6 +257,9 @@ const JobCard = styled.div`
   margin-bottom: 1.2rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative; /* Allow absolute positioning inside */
 
   &:hover {
     transform: translateY(-5px);
@@ -214,43 +267,28 @@ const JobCard = styled.div`
   }
 `;
 
-const JobTitle = styled.h3`
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
-  margin-bottom: 0.5rem;
-`;
-
-const JobCompany = styled.p`
-  font-size: 1.1rem;
-  color: ${(props) => (props.theme === "dark" ? "#e6e6e6" : "#333")};
-  margin-bottom: 0.5rem;
-`;
-
-const JobSalary = styled.p`
-  font-size: 1.1rem;
-  color: ${(props) => (props.theme === "dark" ? "#e6e6e6" : "#333")};
-  margin-bottom: 1rem;
-`;
-
 const MatchButton = styled.button`
-  background-color: rgba(59, 130, 246, 0.8);
+  background: linear-gradient(135deg, #b800e6, #ff66b2);
   color: white;
   border: none;
   padding: 0.8rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 500;
+  border-radius: 20px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Helvetica Neue", Arial, sans-serif;
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 1rem;
+  text-transform: uppercase;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 
   &:hover {
-    background-color: rgba(59, 130, 246, 1);
-    animation: ${pulseAnimation} 1s infinite;
+    background: linear-gradient(135deg, #a300cc, #ff4da6);
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
 `;
 
@@ -266,7 +304,7 @@ const PaginationButton = styled.button`
   padding: 0.8rem 1.5rem;
   border-radius: 25px;
   font-weight: 500;
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
+  color: #111;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -281,21 +319,36 @@ const PaginationButton = styled.button`
 
 const LoadingText = styled.p`
   font-size: 1.1rem;
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
+  color: #111;
   text-align: center;
   padding: 2rem;
 `;
 
 const NoResultsText = styled.p`
   font-size: 1.1rem;
-  color: ${(props) => (props.theme === "dark" ? "#ffffff" : "#111")};
+  color: #111;
   text-align: center;
   padding: 2rem;
 `;
-
 export default function JobSearchPage() {
   const navigate = useNavigate();
-  const { theme } = useTheme(); // Assuming you have a theme context
+
+  const [expanded, setExpanded] = useState({});
+
+  const toggleDescription = (job_id) => {
+    setExpanded((prev) => ({
+      ...prev,
+      [job_id]: !prev[job_id],
+    }));
+  };
+
+  const truncateText = (text, limit) => {
+    const words = text.split(" ");
+    return words.length > limit
+      ? words.slice(0, limit).join(" ") + "..."
+      : text;
+  };
+
   const [filters, setFilters] = useState({
     location: "",
     salary: "",
@@ -333,19 +386,17 @@ export default function JobSearchPage() {
   };
 
   return (
-    <PageWrapper theme={theme}>
+    <PageWrapper>
       <ContentContainer>
         <Header>
           <LogoContainer>
             <LogoIcon>📝</LogoIcon>
-            <LogoText to="/" theme={theme}>
-              ResuMate
-            </LogoText>
+            <LogoText to="/">ResuMate</LogoText>
           </LogoContainer>
-          <Tagline theme={theme}>Simplifying the job process... 😊</Tagline>
+          <Tagline>Simplifying the job process... 😊</Tagline>
         </Header>
 
-        <SearchTitle theme={theme}>Search Job Postings</SearchTitle>
+        <SearchTitle>Search Job Postings</SearchTitle>
 
         <FilterContainer>
           <FilterInput
@@ -353,51 +404,56 @@ export default function JobSearchPage() {
             name="location"
             placeholder="Location..."
             onChange={handleFilterChange}
-            theme={theme}
           />
           <FilterInput
             type="number"
             name="salary"
             placeholder="Min Salary..."
             onChange={handleFilterChange}
-            theme={theme}
           />
           <FilterInput
             type="text"
             name="company"
             placeholder="Company..."
             onChange={handleFilterChange}
-            theme={theme}
           />
         </FilterContainer>
 
-        <JobResultsHeader theme={theme}>Current Positions:</JobResultsHeader>
+        <JobResultsHeader>Current Positions:</JobResultsHeader>
 
         {loading ? (
-          <LoadingText theme={theme}>Loading opportunities...</LoadingText>
+          <LoadingText>Loading opportunities...</LoadingText>
         ) : jobResults_sample.length > 0 ? (
           <JobCardContainer>
             {jobResults_sample.map((job) => (
               <JobCard key={job.job_id}>
-                <JobTitle theme={theme}>{job.job_title}</JobTitle>
-                <JobCompany theme={theme}>
-                  {job.employer_name} - {job.job_city}
-                </JobCompany>
-                <JobSalary theme={theme}>${job.salary || "N/A"}</JobSalary>
-                <MatchButton onClick={() => handleInterviewProcess(job)}>
-                  Am I a good match? <FiArrowRight />
-                </MatchButton>
+                <JobTitle>{job.job_title}</JobTitle>
+                <JobCardHeader>
+                  <JobCompany>
+                    {job.employer_name} - {job.job_city}
+                  </JobCompany>
+                  <MatchButton onClick={() => handleInterviewProcess(job)}>
+                    Am I a good match? <FiArrowRight />
+                  </MatchButton>
+                </JobCardHeader>
+                <JobSalary>${job.salary || "N/A"}</JobSalary>
+                <JobDescription>
+                  {expanded[job.job_id]
+                    ? job.description
+                    : truncateText(job.description, 20)}
+                  <ReadMoreButton onClick={() => toggleDescription(job.job_id)}>
+                    {expanded[job.job_id] ? "Read Less" : "Read More"}
+                  </ReadMoreButton>
+                </JobDescription>
               </JobCard>
             ))}
           </JobCardContainer>
         ) : (
-          <NoResultsText theme={theme}>
-            No jobs match your filters.
-          </NoResultsText>
+          <NoResultsText>No jobs match your filters.</NoResultsText>
         )}
 
         <PaginationContainer>
-          <PaginationButton theme={theme}>&lt; Next Page &gt;</PaginationButton>
+          <PaginationButton>&lt; Next Page &gt;</PaginationButton>
         </PaginationContainer>
       </ContentContainer>
     </PageWrapper>
