@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
-import ResumeButton from "../components/ResumeButton.jsx";
+import ResumeButton from "../components/ResumeUploadArea.jsx";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -315,31 +315,16 @@ ${jobDetails.description}
                 >
                   Upload Resume
                 </h2>
-                <motion.div
-                  className={`flex flex-col items-center justify-center py-16 px-8 rounded-xl ${
-                    darkMode
-                      ? "bg-gray-700 bg-opacity-40 border border-gray-600"
-                      : "bg-gray-50 border-2 border-dashed border-gray-300"
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
+                <motion.div>
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <ResumeButton onResumeParsed={handleResumeParsed} />
+                    <ResumeButton
+                      onResumeParsed={handleResumeParsed}
+                      darkMode={darkMode}
+                    />
                   </motion.div>
-                  {uploadedFileName && (
-                    <p
-                      className={`mt-2 text-sm ${
-                        darkMode ? "text-gray-300" : "text-gray-600"
-                      }`}
-                    >
-                      Uploaded:{" "}
-                      <span className="font-medium">{uploadedFileName}</span>
-                    </p>
-                  )}
                 </motion.div>
                 <p
                   className={`mt-8 text-sm ${
