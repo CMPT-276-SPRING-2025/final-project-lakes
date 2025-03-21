@@ -223,7 +223,7 @@ const JobSearchPage = () => {
 
   // Navigate to interview process
   const handleInterviewProcess = (job) => {
-    navigate("/match-analysis", { state: { job } });
+    navigate("/match-check", { state: { job } });
   };
 
   // Fetch jobs when filters change
