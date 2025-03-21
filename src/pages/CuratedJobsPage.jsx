@@ -60,79 +60,159 @@ const CuratedJobsPage = () => {
   }, []);
 
   // Callback function to handle parsed resume text
+  // Update the main handler function to include proper error handling
   const handleResumeParsed = async (text) => {
     setLoading(true);
+    setJobs([]); // Clear any previous jobs
+    setKeywords([]); // Clear any previous keywords
 
     try {
-      // Simulate a delay for better UX
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       // Extract keywords using OpenAI API
       const extractedKeywords = await extractKeywordsFromResume(text);
       setKeywords(extractedKeywords);
 
-      // Fetch jobs using JSearch API
+      // Fetch jobs using JSearch API - no hardcoded fallbacks
       const fetchedJobs = await fetchJobsUsingKeywords(extractedKeywords);
-      setJobs(fetchedJobs.slice(0, 5)); // Limit to 5 jobs
+
+      // Set the jobs, limited to 5 for display
+      setJobs(fetchedJobs.slice(0, 5));
+
+      // If no jobs were found, show an error
+      if (fetchedJobs.length === 0) {
+        throw new Error("No matching jobs found for your profile");
+      }
     } catch (error) {
       console.error("Error processing resume:", error);
+
+      // Show error to user
+      alert(
+        `Error: ${
+          error.message || "Failed to process your resume. Please try again."
+        }`
+      );
+
+      // Keep existing keywords if we got that far
+      if (keywords.length === 0) {
+        setKeywords([]);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   // Function to extract keywords using OpenAI API
+
+  // Extract keywords from resume using OpenAI API
   const extractKeywordsFromResume = async (resumeText) => {
-    // Implementation remains the same
-    // Simulated response for demo
-    return [
-      "JavaScript",
-      "React",
-      "UI/UX Design",
-      "Node.js",
-      "API Integration",
-    ];
+    try {
+      // Call OpenAI API to extract keywords
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a helpful assistant that analyzes resumes and extracts key skills, experiences, and qualifications.",
+              },
+              {
+                role: "user",
+                content: `Extract the top 5 most important keywords from this resume. Focus on technical skills, experience level, industry, and job roles. Also identify if the person is a student or intern, and their country of residence if mentioned. Format your response as a JSON array of strings with no explanation: ["keyword1", "keyword2", "student/not student", "country", "intern/not intern"].\n\nResume text:\n${resumeText}`,
+              },
+            ],
+            temperature: 0.3,
+            max_tokens: 150,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        // Parse the JSON response from OpenAI
+        try {
+          const keywordsText = data.choices[0].message.content.trim();
+          const keywords = JSON.parse(keywordsText);
+          console.log("Extracted keywords:", keywords);
+          return keywords;
+        } catch (parseError) {
+          console.error("Error parsing OpenAI response:", parseError);
+          // Extract keywords more simply from text response
+          const text = data.choices[0].message.content;
+          return text
+            .split(",")
+            .map((kw) => kw.trim())
+            .slice(0, 5);
+        }
+      }
+
+      throw new Error("Invalid response from OpenAI API");
+    } catch (error) {
+      console.error("Error extracting keywords:", error);
+      throw error; // Propagate error to be handled in the calling function
+    }
   };
 
-  // Function to fetch jobs using JSearch API
+  // Fetch jobs from JSearch API using extracted keywords
   const fetchJobsUsingKeywords = async (keywords) => {
-    // Implementation remains the same
-    // Simulated response for demo
-    return [
+    // Extract main skills (usually the first 2-3 keywords)
+    const skills = keywords.slice(0, 2).join(" ");
+
+    // Check if person is a student/intern (should be in positions 2 and 4)
+    const isStudent = keywords[2]?.toLowerCase().includes("student");
+    const isIntern = keywords[4]?.toLowerCase().includes("intern");
+
+    // Determine job type based on student/intern status
+    const jobType = isStudent || isIntern ? "internship" : "fulltime";
+
+    // Extract country (should be in position 3)
+    const country = keywords[3] || "USA";
+
+    // Build our query
+    const query = `${skills} ${jobType}`;
+
+    // Call JSearch API
+    const response = await fetch(
+      `https://jsearch.p.rapidapi.com/search?query=${encodeURIComponent(
+        query
+      )}&num_pages=1&country=${encodeURIComponent(country)}`,
       {
-        job_id: "1",
-        job_title: "Senior Frontend Developer",
-        employer_name: "TechCorp",
-        job_city: "San Francisco",
-        job_country: "USA",
-        job_employment_type: "Full-time",
-        job_description:
-          "We're looking for an experienced frontend developer with React expertise to join our growing team.",
-        job_apply_link: "#",
-      },
-      {
-        job_id: "2",
-        job_title: "UI/UX Designer",
-        employer_name: "DesignHub",
-        job_city: "Remote",
-        job_country: "USA",
-        job_employment_type: "Contract",
-        job_description:
-          "Join our creative team to design beautiful, intuitive user interfaces for our clients.",
-        job_apply_link: "#",
-      },
-      {
-        job_id: "3",
-        job_title: "Full Stack Developer",
-        employer_name: "GrowthStartup",
-        job_city: "New York",
-        job_country: "USA",
-        job_employment_type: "Full-time",
-        job_description:
-          "Help us build the next generation of web applications with modern technologies.",
-        job_apply_link: "#",
-      },
-    ];
+        method: "GET",
+        headers: {
+          "X-RapidAPI-Key": JSEARCH_API_KEY,
+          "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`JSearch API responded with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.data && Array.isArray(data.data)) {
+      // Transform the API response to match our expected job structure
+      return data.data.map((job) => ({
+        job_id: job.job_id || String(Math.random()),
+        job_title: job.job_title || "Position",
+        employer_name: job.employer_name || "Company",
+        job_city: job.job_city || (job.job_is_remote ? "Remote" : ""),
+        job_country: job.job_country || country,
+        job_employment_type: job.job_employment_type || jobType,
+        job_description: job.job_description || "No description available",
+        job_apply_link: job.job_apply_link || "#",
+      }));
+    }
+
+    throw new Error("Invalid response format from JSearch API");
   };
 
   // Card variant for framer motion
