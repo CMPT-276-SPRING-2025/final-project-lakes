@@ -80,7 +80,7 @@ const MatchAnalysisPage = () => {
               {
                 role: "system",
                 content:
-                  "You are an AI career assistant that evaluates how well a users resume matches a given job description.",
+                  "You are an AI career assistant that evaluates how well my resume matches a given job description. Please provide invaluable feedback to help me improve my chances of getting hired.",
               },
               {
                 role: "user",
