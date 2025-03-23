@@ -1,14 +1,5 @@
 # AI-Powered Job Application Analyzer & Resume Enhancer
 
-## Group Members
-
-- Member 1: Khalid Karim
-- Member 2: Alexander Potiagalov
-- Member 3: Mohamad Refaai
-- Member 4: Manan Mehta
-
-## Project Description
-
 This project is an AI-powered platform designed to help job seekers improve their resumes, generate tailored cover letters, and find job opportunities that best match their skills and experience. By leveraging AI and job search APIs, the application streamlines the job application process, providing personalized feedback, keyword optimization, and job matching to enhance applicant tracking system (ATS) compatibility.
 
 The platform uses the OpenAI API to analyze resumes, generate insightful feedback, and suggest improvements. Users can upload their resume and receive a score along with actionable recommendations to refine their content. Additionally, the AI-powered cover letter generator creates tailored cover letters based on job descriptions, ensuring a strong alignment between applications and employer expectations. The system also extracts keywords from job postings and suggests enhancements to increase the chances of passing ATS filters.
