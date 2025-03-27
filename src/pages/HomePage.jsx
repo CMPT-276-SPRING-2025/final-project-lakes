@@ -456,7 +456,7 @@ export default function HomePage() {
           {/* Left Section: Text & Buttons */}
           <div className="w-full lg:w-1/2 flex flex-col justify-center">
             <motion.div
-              className="mb-10 text-center md:text-left"
+              className="mb-3 text-center md:text-left"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
