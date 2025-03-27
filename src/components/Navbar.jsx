@@ -28,7 +28,6 @@ const Navbar = ({ darkMode, setDarkMode }) => {
     { label: "Jobs For You", path: "/curated-jobs" },
     { label: "Check Match", path: "/match-check" },
     { label: "Improve Resume", path: "/resume-improve" },
-    { label: "Interview Process", path: "/interview-process" },
   ];
 
   // Animation variants
@@ -116,7 +115,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
           </Link>
         </motion.div>
 
-        {/* 🧭 Desktop Nav (now showing at 900px and above) */}
+        {/* 🧭 Desktop Nav (900px and above) */}
         <motion.div
           className="hidden lg:hidden md:flex space-x-8"
           initial={{ opacity: 0, y: -20 }}
@@ -128,12 +127,12 @@ const Navbar = ({ darkMode, setDarkMode }) => {
             <motion.div
               key={item.label}
               className="relative"
+              // Removed the delay from hover transition
               whileHover={{ scale: 1.05 }}
               transition={{
                 type: "spring",
                 stiffness: 400,
                 damping: 10,
-                delay: index * 0.1 + 0.3,
               }}
             >
               <Link
@@ -204,7 +203,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
             )}
           </motion.button>
 
-          {/* Hamburger for mobile - now showing at less than 900px */}
+          {/* Hamburger for mobile - shown below 900px */}
           {isMobile && (
             <motion.button
               className="focus:outline-none"
