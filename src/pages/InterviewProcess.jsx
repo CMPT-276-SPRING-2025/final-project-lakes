@@ -43,6 +43,12 @@ function useTheme() {
   return useContext(ThemeContext);
 }
 
+// Helper function to truncate text (reused from JobSearchPage)
+const truncateText = (text, limit) => {
+  const words = text.split(" ");
+  return words.length > limit ? words.slice(0, limit).join(" ") + "..." : text;
+};
+
 // Variants for animations
 const cardVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -79,14 +85,26 @@ function InterviewProcessPage() {
   const navigate = useNavigate();
 
   // ----- Original states/logic -----
+  // Get job data from location state (passed from search page)
   const job = location.state?.job || {};
   const [resumeText, setResumeText] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
+
+  // Default values in case job data is not passed correctly
   const defaultCompany = "Amazon";
   const defaultPosition = "Software Developer Internship";
+  const defaultDescription =
+    "Develop software applications and contribute to technical solutions.";
+
+  // Use job data from navigation state or fallback to defaults
   const company = job.employer_name || defaultCompany;
   const position = job.job_title || defaultPosition;
-  const jobDescription = job.description || "";
+  const jobDescription = job.description || defaultDescription;
+
+  // Log job data received from search page (for debugging)
+  useEffect(() => {
+    console.log("Job data received:", job);
+  }, [job]);
 
   const [behavioralQuestions, setBehavioralQuestions] = useState("");
   const [loading, setLoading] = useState(false);
@@ -145,23 +163,69 @@ function InterviewProcessPage() {
     });
   };
 
-  // Call OpenAI (through a secure backend service)
+  // Call OpenAI API
   const generateInterviewQuestions = async () => {
     if (behavioralQuestions) return; // already generated
     setButtonText("Generating...");
     setLoading(true);
 
     try {
-      // This code simulates what would normally be a call to your backend
-      // In production, replace this with your actual backend API call
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Replace with your actual key (ideally from environment variable):
+            Authorization: `Bearer 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`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a professional interview coach who provides the most common behavioral interview questions for a specified company and position, along with a brief rationale for why each question is asked.",
+              },
+              {
+                role: "user",
+                content: `
+                The user is interviewing at ${company} for the ${position} role.
+                Salary: ${job.salary || "N/A"}
 
-      // SECURITY NOTE: In a real implementation, you should NOT call OpenAI directly from the frontend
-      // Instead, you should create a backend endpoint that securely stores your API key
-      // and handles the OpenAI communication
+                They have a resume (see below) which may or may not be relevant:
+                Resume Text:
+                ${resumeText}
 
-      // Simulating a backend response for demo purposes
-      setTimeout(() => {
-        const mockQuestions = `
+                Here's the official job description (if any):
+                ${jobDescription}
+
+                1. Provide the top 5 most frequent behavioral questions for ${company} for the ${position} position.
+                2. Explain briefly why each question is asked.
+                3. At the end, give a link to the relevant LeetCode resources (if any).
+              `,
+              },
+            ],
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.choices && data.choices[0].message) {
+        const output = data.choices[0].message.content;
+        setBehavioralQuestions(output);
+        setLeetcodeLink(
+          `https://leetcode.com/company/${company.toLowerCase()}`
+        );
+        setButtonText("Questions Generated");
+      } else {
+        throw new Error("Invalid response from OpenAI");
+      }
+    } catch (error) {
+      console.error("Error generating interview questions:", error);
+
+      // Fallback to mock data in case the API call fails
+      const mockQuestions = `
 1. Question: Tell me about a time when you had to solve a complex technical problem.
 Rationale: This question helps assess your problem-solving skills and technical aptitude, which are core competencies for the ${position} role at ${company}.
 
@@ -178,19 +242,10 @@ Rationale: ${company} has a strong culture of continuous improvement and learnin
 Rationale: The tech industry evolves rapidly, and ${company} values candidates who can adapt and learn quickly. This question assesses your ability to pick up new skills efficiently.
 `;
 
-        setBehavioralQuestions(mockQuestions);
-        setLeetcodeLink(
-          `https://leetcode.com/company/${company.toLowerCase()}`
-        );
-        setButtonText("Questions Generated");
-        setLoading(false);
-      }, 3000); // Simulate network delay
-    } catch (error) {
-      console.error("Error generating interview questions:", error);
-      alert(
-        "Failed to generate interview questions. Check console for details."
-      );
-      setButtonText("Generate Questions");
+      setBehavioralQuestions(mockQuestions);
+      setLeetcodeLink(`https://leetcode.com/company/${company.toLowerCase()}`);
+      setButtonText("Questions Generated");
+    } finally {
       setLoading(false);
     }
   };
