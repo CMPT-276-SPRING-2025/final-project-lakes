@@ -137,7 +137,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
             >
               <Link
                 to={item.path}
-                className={`text-sm font-medium ${
+                className={`text-md font-medium ${
                   darkMode
                     ? "text-gray-300 hover:text-white"
                     : "text-gray-700 hover:text-black"
