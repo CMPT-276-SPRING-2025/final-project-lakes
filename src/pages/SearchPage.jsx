@@ -225,6 +225,9 @@ const JobSearchPage = () => {
   const handleInterviewProcess = (job) => {
     navigate("/match-check", { state: { job } });
   };
+  const handleInterviewquestions = (job) => {
+    navigate("/interview-process", { state: { job } });
+  };
 
   // Fetch jobs when filters change
   useEffect(() => {
@@ -596,9 +599,7 @@ const JobSearchPage = () => {
                         </motion.button>
 
                         <motion.button
-                          onClick={() =>
-                            navigate("/interview-process", { state: { job } })
-                          }
+                          onClick={() => handleInterviewquestions(job)}
                           className={`px-6 py-3 rounded-full font-medium shadow-lg flex items-center justify-center space-x-2 ${
                             darkMode
                               ? "bg-indigo-600 hover:bg-indigo-700 text-white"
