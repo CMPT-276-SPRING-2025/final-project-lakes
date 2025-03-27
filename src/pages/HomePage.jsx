@@ -223,9 +223,9 @@ const ImagesContainer = styled.div`
 
 const ImageTop = styled.img`
   position: absolute;
-  top: 10px;
+  top: 0px;
   right: 0px;
-  width: 270px;
+  width: 240px;
   height: auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
   border-radius: 4px;
@@ -235,9 +235,9 @@ const ImageTop = styled.img`
   z-index: 3;
 
   @media (max-width: 1100px) {
-    width: 250px;
-    right: 0;
-    top: 20px;
+    top: 0px;
+    right: 0px;
+    width: 240px;
   }
 
   @media (max-width: 1023px) {
@@ -265,9 +265,9 @@ const ImageTop = styled.img`
 
 const ImageMiddle = styled.img`
   position: absolute;
-  top: 190px;
+  top: 150px;
   right: 110px;
-  width: 280px;
+  width: 245px;
   height: auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
   border-radius: 4px;
@@ -277,9 +277,9 @@ const ImageMiddle = styled.img`
   z-index: 2;
 
   @media (max-width: 1100px) {
-    width: 260px;
-    right: 60px;
-    top: 230px;
+    top: 150px;
+    right: 110px;
+    width: 245px;
   }
 
   @media (max-width: 1023px) {
@@ -307,9 +307,9 @@ const ImageMiddle = styled.img`
 
 const ImageBottom = styled.img`
   position: absolute;
-  top: 350px;
+  top: 300px;
   right: 220px;
-  width: 290px;
+  width: 250px;
   height: auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
   border-radius: 4px;
@@ -319,9 +319,9 @@ const ImageBottom = styled.img`
   z-index: 1;
 
   @media (max-width: 1100px) {
-    width: 270px;
-    right: 120px;
-    top: 410px;
+    top: 300px;
+    right: 220px;
+    width: 250px;
   }
 
   @media (max-width: 1023px) {
@@ -456,7 +456,7 @@ export default function HomePage() {
           {/* Left Section: Text & Buttons */}
           <div className="w-full lg:w-1/2 flex flex-col justify-center">
             <motion.div
-              className="mb-16 text-center md:text-left"
+              className="mb-10 text-center md:text-left"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
@@ -471,16 +471,18 @@ export default function HomePage() {
               >
                 Resu<span className="text-purple-500">Mate</span>
               </motion.h1>
-              <motion.p
-                className={`text-xl ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                } max-w-2xl mx-auto md:mx-0`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.4 }}
-              >
-                {typedText}|
-              </motion.p>
+              <div className="h-20 overflow-y-auto">
+                <motion.p
+                  className={`text-xl ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  } max-w-2xl mx-auto md:mx-0`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.4 }}
+                >
+                  {typedText}|
+                </motion.p>
+              </div>
             </motion.div>
 
             {/* Floating Images for Mobile */}
@@ -506,7 +508,7 @@ export default function HomePage() {
 
             {/* Feature Boxes with Framer Motion */}
             <motion.div
-              className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
               initial="hidden"
               animate="visible"
               variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
@@ -602,30 +604,6 @@ export default function HomePage() {
                 <div className="mt-auto">
                   <FancyButton to="/resume-improve" darkMode={darkMode}>
                     Improve Resume
-                  </FancyButton>
-                </div>
-              </FeatureCard>
-
-              <FeatureCard
-                variants={featureVariants}
-                className={
-                  darkMode
-                    ? "bg-gray-800 bg-opacity-50"
-                    : "bg-white bg-opacity-70"
-                }
-              >
-                <h3
-                  className={darkMode ? "text-purple-300" : "text-purple-700"}
-                >
-                  Interview Process
-                </h3>
-                <p className={darkMode ? "text-gray-300" : "text-gray-700"}>
-                  Prepare with AI-generated practice questions and mock
-                  interviews.
-                </p>
-                <div className="mt-auto">
-                  <FancyButton to="/interview-process" darkMode={darkMode}>
-                    Interview Process
                   </FancyButton>
                 </div>
               </FeatureCard>
