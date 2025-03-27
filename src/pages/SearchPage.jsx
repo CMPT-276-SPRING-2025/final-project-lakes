@@ -145,7 +145,7 @@ const jobResults_sample = [
 ];
 
 // API configuration (unchanged)
-const API_KEY = "9e4811e9f4msh79dc0327c602ff2p109aa4jsn6cee4b28e7fc sjsjjs";
+const API_KEY = "9e4811e9f4msh79dc0327c602ff2p109aa4jsn6cee4b28e7fc";
 const options = {
   method: "GET",
   headers: {
@@ -429,8 +429,8 @@ const JobSearchPage = () => {
                   placeholder="Location..."
                   className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
                     darkMode
-                      ? "bg-gray-700 text-white border-white border-2"
-                      : "bg-gray-100 text-black border-black border-2"
+                      ? "bg-gray-700 text-white border-gray-600"
+                      : "bg-gray-100 text-black border-gray-200"
                   }`}
                 />
                 <input
@@ -441,8 +441,8 @@ const JobSearchPage = () => {
                   placeholder="Min Salary..."
                   className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
                     darkMode
-                      ? "bg-gray-700 text-white border-white border-2"
-                      : "bg-gray-100 text-black border-black border-2"
+                      ? "bg-gray-700 text-white border-gray-600"
+                      : "bg-gray-100 text-black border-gray-200"
                   }`}
                 />
                 <input
@@ -453,8 +453,8 @@ const JobSearchPage = () => {
                   placeholder="Company..."
                   className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
                     darkMode
-                      ? "bg-gray-700 text-white border-white border-2"
-                      : "bg-gray-100 text-black border-black border-2"
+                      ? "bg-gray-700 text-white border-gray-600"
+                      : "bg-gray-100 text-black border-gray-200"
                   }`}
                 />
               </div>
@@ -521,7 +521,7 @@ const JobSearchPage = () => {
           <AnimatePresence>
             {currentJobs.map((job, index) => (
               <motion.div
-                key={job.job_id}
+                key={job.job_id + index}
                 className={`rounded-2xl overflow-hidden ${
                   darkMode
                     ? "bg-gray-800 bg-opacity-50 backdrop-blur-lg border border-gray-700"
@@ -580,19 +580,37 @@ const JobSearchPage = () => {
                       </div>
                     </div>
                     <div className="md:self-center">
-                      <motion.button
-                        onClick={() => handleInterviewProcess(job)}
-                        className={`px-6 py-3 rounded-full text-white font-medium shadow-lg flex items-center space-x-2 ${
-                          darkMode
-                            ? "bg-purple-600 hover:bg-purple-700"
-                            : "bg-purple-500 hover:bg-purple-600"
-                        }`}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <span>Am I a good match?</span>
-                        <FiArrowRight />
-                      </motion.button>
+                      <div className="flex flex-col gap-2">
+                        <motion.button
+                          onClick={() => handleInterviewProcess(job)}
+                          className={`px-6 py-3 rounded-full text-white font-medium shadow-lg flex items-center justify-center space-x-2 ${
+                            darkMode
+                              ? "bg-purple-600 hover:bg-purple-700"
+                              : "bg-purple-500 hover:bg-purple-600"
+                          }`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <span>Am I a good match?</span>
+                          <FiArrowRight />
+                        </motion.button>
+
+                        <motion.button
+                          onClick={() =>
+                            navigate("/interview-process", { state: { job } })
+                          }
+                          className={`px-6 py-3 rounded-full font-medium shadow-lg flex items-center justify-center space-x-2 ${
+                            darkMode
+                              ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                              : "bg-indigo-100 hover:bg-indigo-200 text-indigo-700"
+                          }`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <span>Search Interview Questions</span>
+                          <FiSearch />
+                        </motion.button>
+                      </div>
                     </div>
                   </div>
                 </div>
