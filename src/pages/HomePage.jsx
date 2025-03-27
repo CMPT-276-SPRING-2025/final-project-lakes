@@ -633,7 +633,9 @@ export default function HomePage() {
         </div>
       </main>
       {/* Footer */}
-      <Footer darkMode={darkMode} />
+      <div className="md:mt-12">
+        <Footer darkMode={darkMode} />
+      </div>
     </div>
   );
 }
