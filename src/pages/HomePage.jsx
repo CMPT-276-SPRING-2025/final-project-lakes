@@ -456,7 +456,7 @@ export default function HomePage() {
           {/* Left Section: Text & Buttons */}
           <div className="w-full lg:w-1/2 flex flex-col justify-center">
             <motion.div
-              className="mb-16 text-center md:text-left"
+              className="mb-10 text-center md:text-left"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
@@ -471,16 +471,18 @@ export default function HomePage() {
               >
                 Resu<span className="text-purple-500">Mate</span>
               </motion.h1>
-              <motion.p
-                className={`text-xl ${
-                  darkMode ? "text-gray-300" : "text-gray-700"
-                } max-w-2xl mx-auto md:mx-0`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.4 }}
-              >
-                {typedText}|
-              </motion.p>
+              <div className="h-20 overflow-y-auto">
+                <motion.p
+                  className={`text-xl ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  } max-w-2xl mx-auto md:mx-0`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.4 }}
+                >
+                  {typedText}|
+                </motion.p>
+              </div>
             </motion.div>
 
             {/* Floating Images for Mobile */}
@@ -506,7 +508,7 @@ export default function HomePage() {
 
             {/* Feature Boxes with Framer Motion */}
             <motion.div
-              className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
               initial="hidden"
               animate="visible"
               variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
