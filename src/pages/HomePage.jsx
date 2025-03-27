@@ -7,9 +7,9 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 // Import your three resume images (adjust paths as needed)
-import resumeImage1 from "../../images/1.png";
-import resumeImage2 from "../../images/2.png";
-import resumeImage3 from "../../images/3.png";
+import resumeImage1 from "../../Images/1.png";
+import resumeImage2 from "../../Images/2.png";
+import resumeImage3 from "../../Images/3.png";
 
 /* -------------------------
    Typing Effect Data/Logic
