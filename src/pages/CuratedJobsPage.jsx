@@ -2,20 +2,32 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+const VITE_OPENAI_API_KEY = import.meta.env.VITE_API_URL;
+const VITE_JSEARCH_API_KEY = import.meta.env.VITE_API_URL;
 
 // Make sure this path matches your actual directory structure
 // You may need to adjust this path based on your file organization
 import ResumeUploadArea from "../components/ResumeUploadArea";
 
-const OPENAI_API_KEY =
-  "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";
-const JSEARCH_API_KEY = "4d9349ad30msh512113b3b1be6adp1945b7jsn31b42dbeea2f";
+const OPENAI_API_KEY = `${VITE_OPENAI_API_KEY}`;
+const JSEARCH_API_KEY = `${VITE_JSEARCH_API_KEY}`;
 
 const CuratedJobsPage = () => {
+  // Modify darkMode state initialization to use localStorage
+  const [darkMode, setDarkMode] = useState(() => {
+    // Check localStorage for theme preference, default to light mode if not set
+    const savedTheme = localStorage.getItem("theme");
+    return savedTheme === "dark";
+  });
+
+  // Add useEffect to update localStorage whenever darkMode changes
+  useEffect(() => {
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
   const [keywords, setKeywords] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const [showGlowEffect, setShowGlowEffect] = useState(false);
 
   useEffect(() => {
@@ -62,7 +74,7 @@ const CuratedJobsPage = () => {
     };
   }, []);
 
-  // Callback function to handle parsed resume text - this is where ResumeButton will pass the data
+  // Callback function to handle parsed resume text
   const handleResumeParsed = async (text, fileName) => {
     console.log("Resume parsed! Filename:", fileName);
     setLoading(true);
@@ -82,75 +94,120 @@ const CuratedJobsPage = () => {
     }
   };
 
-  // Function to extract keywords using OpenAI API
   const extractKeywordsFromResume = async (resumeText) => {
-    // In a real implementation, you would call the OpenAI API here
-    // For now, we'll just return a simulated response
-
     console.log(
       "Extracting keywords from resume text:",
       resumeText.substring(0, 100) + "..."
     );
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      // Call OpenAI API to extract keywords
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a helpful assistant that extracts specific information from resumes. Extract exactly two things: 1) Country (e.g., Canada, USA), 2) Role (either 'developer' if the person has professional experience, or 'intern' if they're a student). Return only these two values as a comma-separated list.",
+              },
+              {
+                role: "user",
+                content: `Extract country and role from the following resume text:\n\n${resumeText}`,
+              },
+            ],
+            max_tokens: 20, // Reduced tokens since we only need two values
+            temperature: 0.3, // Lower temperature for more deterministic output
+          }),
+        }
+      );
 
-    return [
-      "JavaScript",
-      "React",
-      "UI/UX Design",
-      "Node.js",
-      "API Integration",
-    ];
+      if (!response.ok) {
+        throw new Error(
+          `OpenAI API request failed with status ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+
+      if (!data.choices || data.choices.length === 0) {
+        throw new Error("No choices returned from OpenAI API");
+      }
+
+      const keywords = data.choices[0].message.content
+        .trim()
+        .split(",")
+        .map((keyword) => keyword.trim())
+        .filter((keyword) => keyword);
+
+      console.log("Extracted keywords:", keywords);
+
+      // Ensure we have exactly two keywords
+      if (keywords.length !== 2) {
+        throw new Error("Didn't receive exactly two keywords");
+      }
+
+      return keywords;
+    } catch (error) {
+      console.error("Error extracting keywords:", error);
+      throw error;
+    }
   };
 
-  // Function to fetch jobs using JSearch API
   const fetchJobsUsingKeywords = async (keywords) => {
-    // In a real implementation, you would call the JSearch API here
-    // For now, we'll just return a simulated response
-
     console.log("Fetching jobs for keywords:", keywords);
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    if (keywords.length !== 2) {
+      console.error("Expected exactly 2 keywords (country and role)");
+      return [];
+    }
 
-    return [
-      {
-        job_id: "1",
-        job_title: "Senior Frontend Developer",
-        employer_name: "TechCorp",
-        job_city: "San Francisco",
-        job_country: "USA",
-        job_employment_type: "Full-time",
-        job_description:
-          "We're looking for an experienced frontend developer with React expertise to join our growing team.",
-        job_apply_link: "#",
-      },
-      {
-        job_id: "2",
-        job_title: "UI/UX Designer",
-        employer_name: "DesignHub",
-        job_city: "Remote",
-        job_country: "USA",
-        job_employment_type: "Contract",
-        job_description:
-          "Join our creative team to design beautiful, intuitive user interfaces for our clients.",
-        job_apply_link: "#",
-      },
-      {
-        job_id: "3",
-        job_title: "Full Stack Developer",
-        employer_name: "GrowthStartup",
-        job_city: "New York",
-        job_country: "USA",
-        job_employment_type: "Full-time",
-        job_description:
-          "Help us build the next generation of web applications with modern technologies.",
-        job_apply_link: "#",
-      },
-    ];
+    const [country, role] = keywords;
+
+    // Create a query based on the role and country
+    let query;
+    if (role.toLowerCase() === "intern") {
+      query = `${role} jobs in ${country}`;
+    } else {
+      query = `developer jobs in ${country}`;
+    }
+
+    try {
+      const response = await fetch(
+        `https://jsearch.p.rapidapi.com/search?query=${encodeURIComponent(
+          query
+        )}&page=1&num_pages=1`,
+        {
+          method: "GET",
+          headers: {
+            "X-RapidAPI-Key": JSEARCH_API_KEY,
+            "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `JSearch API request failed with status ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      console.log("Fetched jobs:", data.data);
+
+      return data.data || [];
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      throw error;
+    }
   };
-
   // Card variant for framer motion
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
