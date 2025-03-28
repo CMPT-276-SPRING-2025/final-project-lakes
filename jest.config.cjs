@@ -1,11 +1,11 @@
-module.exports = {
+export default {
   testEnvironment: "jsdom",
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
-  moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
-    "\\.css$": "<rootDir>/__mocks__/styleMock.js",
-  },
+  setupFilesAfterEnv: ["./setupTests.js"],
   transform: {
     "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
+  },
+  moduleNameMapper: {
+    // Handle module aliases (if you're using them in vite.config.js)
+    "^@/(.*)$": "<rootDir>/src/$1",
   },
 };
