@@ -80,8 +80,8 @@ const ResumeUploadArea = ({ onResumeParsed, darkMode = false }) => {
     <div
       className={`flex flex-col items-center justify-center py-16 px-8 rounded-xl ${
         darkMode
-          ? "bg-gray-700 bg-opacity-40 border border-gray-600"
-          : "bg-gray-50 border-2 border-dashed border-gray-300"
+          ? "bg-gray-800 bg-opacity-50 border border-gray-700"
+          : "bg-white bg-opacity-70 border border-gray-100"
       }`}
     >
       {/* Initial Upload State */}
