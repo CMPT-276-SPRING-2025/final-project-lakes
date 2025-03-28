@@ -55,6 +55,8 @@ const MatchAnalysisPage = () => {
   const handleResumeParsed = (extractedText, fileName) => {
     setResumeText(extractedText);
     setUploadedFileName(fileName);
+    localStorage.setItem("resumeText", extractedText);
+    localStorage.setItem("uploadedFileName", fileName);
     console.log("Extracted Resume Text:", extractedText);
   };
 
