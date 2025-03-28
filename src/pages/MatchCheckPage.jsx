@@ -18,7 +18,6 @@ const cardVariants = {
 const MatchAnalysisPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
   const job = location.state ? location.state.job : undefined;
 
   // Instead of "theme", use a boolean darkMode for consistency
