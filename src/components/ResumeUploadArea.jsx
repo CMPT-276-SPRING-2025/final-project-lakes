@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import { motion } from "framer-motion";
 import { Upload, CheckCircle, RefreshCw } from "lucide-react";
@@ -63,6 +63,18 @@ const ResumeUploadArea = ({ onResumeParsed, darkMode = false }) => {
     setResumeUploaded(false);
     setFileName("");
   };
+
+  useEffect(() => {
+    // Check if we already have a saved resume in localStorage
+    const savedFileName = localStorage.getItem("uploadedFileName");
+    const savedResume = localStorage.getItem("resumeText");
+
+    // If both exist, show the same "uploaded success" UI
+    if (savedFileName && savedResume) {
+      setFileName(savedFileName);
+      setResumeUploaded(true);
+    }
+  }, []);
 
   return (
     <div
