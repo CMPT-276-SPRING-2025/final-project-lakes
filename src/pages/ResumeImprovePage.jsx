@@ -4,6 +4,8 @@ import ResumeButton from "../components/ResumeUploadArea.jsx";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+const openAiKey = import.meta.env.VITE_OPENAI_API_KEY;
+
 // Variants for animations
 const cardVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -31,7 +33,9 @@ const ResumeImprovePage = () => {
     description: "",
   });
   const [resumeText, setResumeText] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // for the overall generate action, if needed
+  const [loadingResume, setLoadingResume] = useState(false);
+  const [loadingCoverLetter, setLoadingCoverLetter] = useState(false);
   const [generatedResume, setGeneratedResume] = useState("");
   const [generatedCoverLetter, setGeneratedCoverLetter] = useState("");
   const [resumeFeedback, setResumeFeedback] = useState("");
@@ -95,41 +99,238 @@ const ResumeImprovePage = () => {
     setLoading(true);
 
     try {
-      // Simulate API response
-      setTimeout(() => {
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${openAiKey}`, // Replace with environment variable
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a professional career coach who creates ATS-optimized resumes and compelling cover letters tailored to job descriptions. You have a client who needs help optimizing their resume and writing a cover letter for a job application.",
+              },
+              {
+                role: "user",
+                content: `
+              Optimize the resume and generate a tailored cover letter based on the provided job description. The output must be extremely impressive, ATS-compatible, and plain text without any markdown formatting (do not use any asterisks, underscores, or similar symbols).
+
+              Resume:
+              ${resumeText}
+
+              Job Description:
+              ${jobDetails.description}
+
+              Requirements:
+              - Extract key skills and keywords.
+              - Rewrite the resume to be ATS-friendly while preserving professional experience.
+              - Generate a well-structured, formal, and engaging cover letter.
+              - Ensure the output is clear and organized with proper headings, newlines, and paragraphs.
+              - The output should be in plain text with no markdown formatting symbols.
+
+              Output Format:
+              Optimized Resume:
+              <Formatted Resume Content with clear headings and paragraphs without any delimiter lines>
+
+              Cover Letter:
+              <Formatted Cover Letter Content with clear headings and paragraphs without any delimiter lines>
+            `,
+              },
+            ],
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.choices && data.choices[0].message) {
+        const output = data.choices[0].message.content;
+
+        // Use regex to extract resume and cover letter separately
+        const resumeMatch = output.match(
+          /Optimized Resume:\s*([\s\S]*?)\s*Cover Letter:/
+        );
+        const coverLetterMatch = output.match(/Cover Letter:\s*([\s\S]*)/);
+
         setGeneratedResume(
-          "Sample generated resume content would appear here."
+          resumeMatch ? resumeMatch[1].trim() : "Error parsing resume..."
         );
         setGeneratedCoverLetter(
-          "Sample generated cover letter content would appear here."
+          coverLetterMatch
+            ? coverLetterMatch[1].trim()
+            : "Error parsing cover letter..."
         );
-        setLoading(false);
-      }, 2000);
+      } else {
+        throw new Error("Invalid response from OpenAI");
+      }
     } catch (error) {
       console.error("Error generating resume & cover letter:", error);
-      alert("Failed to generate resume & cover letter.");
-      setLoading(false);
+      alert(
+        "Failed to generate resume & cover letter. Check console for details."
+      );
     }
+
+    setLoading(false);
   };
 
   const regenerateResume = async () => {
-    setLoading(true);
-    setTimeout(() => {
-      setGeneratedResume(
-        "Updated resume based on your feedback would appear here."
+    if (!resumeText.trim() || !jobDetails.description.trim()) {
+      alert("Please upload a resume and enter a job description.");
+      return;
+    }
+
+    setLoadingResume(true);
+
+    try {
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${openAiKey}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a professional career coach who creates ATS-optimized resumes tailored to job descriptions. You have a client who needs help optimizing their resume for a job application.",
+              },
+              {
+                role: "user",
+                content: `
+              Optimize the resume based on the provided job description and feedback. The output must be extremely impressive, ATS-compatible, and plain text without any markdown formatting (do not use any asterisks, underscores, or similar symbols).
+
+              Resume:
+              ${resumeText}
+
+              Job Description:
+              ${jobDetails.description}
+
+              Feedback:
+              ${resumeFeedback}
+
+              Requirements:
+              - Extract key skills and keywords.
+              - Rewrite the resume to be ATS-friendly while preserving professional experience.
+              - Incorporate feedback provided by the user.
+              - Ensure the output is clear and organized with proper headings, newlines, and paragraphs.
+              - The output should be in plain text with no markdown formatting symbols.
+
+              Output Format:
+              Optimized Resume:
+              <Formatted Resume Content with clear headings and paragraphs without any delimiter lines>
+            `,
+              },
+            ],
+          }),
+        }
       );
-      setLoading(false);
-    }, 2000);
+
+      const data = await response.json();
+      if (data.choices && data.choices[0].message) {
+        const output = data.choices[0].message.content;
+
+        // Use regex to extract resume
+        const resumeMatch = output.match(/\*\*Optimized Resume:\*\*(.*)/s);
+
+        setGeneratedResume(
+          resumeMatch ? resumeMatch[1].trim() : "Error parsing resume..."
+        );
+      } else {
+        throw new Error("Invalid response from OpenAI");
+      }
+    } catch (error) {
+      console.error("Error regenerating resume:", error);
+      alert("Failed to regenerate resume. Check console for details.");
+    }
+
+    setLoadingResume(false);
   };
 
   const regenerateCoverLetter = async () => {
-    setLoading(true);
-    setTimeout(() => {
-      setGeneratedCoverLetter(
-        "Updated cover letter based on your feedback would appear here."
+    if (!resumeText.trim() || !jobDetails.description.trim()) {
+      alert("Please upload a resume and enter a job description.");
+      return;
+    }
+
+    setLoadingCoverLetter(true);
+
+    try {
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${openAiKey}`, // Replace with environment variable
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a professional career coach who creates compelling cover letters tailored to job descriptions. You have a client who needs help writing a cover letter for a job application.",
+              },
+              {
+                role: "user",
+                content: `
+              Generate a tailored cover letter based on the provided job description and feedback. The output must be extremely impressive, ATS-compatible, and plain text without any markdown formatting (do not use any asterisks, underscores, or similar symbols).
+
+              Resume:
+              ${resumeText}
+
+              Job Description:
+              ${jobDetails.description}
+
+              Feedback:
+              ${coverLetterFeedback}
+
+              Requirements:
+              - Extract key skills and keywords.
+              - Incorporate feedback provided by the user.
+              - Generate a well-structured, formal, and engaging cover letter.
+              - Ensure the output is clear and organized with proper headings, newlines, and paragraphs.
+              - The output should be in plain text with no markdown formatting symbols.
+
+              Output Format:
+              Cover Letter:
+              <Formatted Cover Letter Content with clear headings and paragraphs without any delimiter lines>
+            `,
+              },
+            ],
+          }),
+        }
       );
-      setLoading(false);
-    }, 2000);
+
+      const data = await response.json();
+      if (data.choices && data.choices[0].message) {
+        const output = data.choices[0].message.content;
+
+        // Use regex to extract cover letter
+        const coverLetterMatch = output.match(/\*\*Cover Letter:\*\*(.*)/s);
+
+        setGeneratedCoverLetter(
+          coverLetterMatch
+            ? coverLetterMatch[1].trim()
+            : "Error parsing cover letter..."
+        );
+      } else {
+        throw new Error("Invalid response from OpenAI");
+      }
+    } catch (error) {
+      console.error("Error regenerating cover letter:", error);
+      alert("Failed to regenerate cover letter. Check console for details.");
+    }
+
+    setLoadingCoverLetter(false);
   };
 
   return (
@@ -393,7 +594,7 @@ const ResumeImprovePage = () => {
               >
                 <div className="p-6">
                   <h2
-                    className={`text-xl font-bold mb-6 text-center ${
+                    className={`text-2xl font-bold mb-6 text-center ${
                       darkMode ? "text-white" : "text-gray-800"
                     }`}
                   >
@@ -409,48 +610,12 @@ const ResumeImprovePage = () => {
                     <p
                       className={`${
                         darkMode ? "text-gray-300" : "text-gray-600"
-                      }`}
+                      } whitespace-pre-line`}
                     >
                       {generatedResume ||
                         "Your generated resume will appear here..."}
                     </p>
                   </div>
-                  <motion.button
-                    onClick={regenerateResume}
-                    disabled={loading}
-                    className={`px-6 py-3 rounded-full w-full ${
-                      darkMode
-                        ? "bg-purple-600 hover:bg-purple-700"
-                        : "bg-purple-500 hover:bg-purple-600"
-                    } text-white font-medium shadow-lg transition-transform flex items-center justify-center space-x-2`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {loading ? (
-                      <svg
-                        className="animate-spin h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                    ) : (
-                      <span>Regenerate Resume</span>
-                    )}
-                  </motion.button>
                 </div>
               </motion.div>
             </motion.div>
@@ -493,6 +658,42 @@ const ResumeImprovePage = () => {
                         : "bg-gray-100 text-black border-gray-300"
                     }`}
                   />
+                  <motion.button
+                    onClick={regenerateResume}
+                    disabled={loading}
+                    className={`px-6 py-3 rounded-full w-full ${
+                      darkMode
+                        ? "bg-purple-600 hover:bg-purple-700"
+                        : "bg-purple-500 hover:bg-purple-600"
+                    } text-white font-medium shadow-lg transition-transform flex items-center justify-center space-x-2`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {loadingResume ? (
+                      <svg
+                        className="animate-spin h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                    ) : (
+                      <span>Regenerate Resume</span>
+                    )}
+                  </motion.button>
                 </div>
               </motion.div>
             </motion.div>
@@ -522,7 +723,7 @@ const ResumeImprovePage = () => {
               >
                 <div className="p-6">
                   <h2
-                    className={`text-xl font-bold mb-6 text-center ${
+                    className={`text-2xl font-bold mb-6 text-center ${
                       darkMode ? "text-white" : "text-gray-800"
                     }`}
                   >
@@ -538,48 +739,12 @@ const ResumeImprovePage = () => {
                     <p
                       className={`${
                         darkMode ? "text-gray-300" : "text-gray-600"
-                      }`}
+                      } whitespace-pre-line`}
                     >
                       {generatedCoverLetter ||
                         "Your generated cover letter will appear here..."}
                     </p>
                   </div>
-                  <motion.button
-                    onClick={regenerateCoverLetter}
-                    disabled={loading}
-                    className={`px-6 py-3 rounded-full w-full ${
-                      darkMode
-                        ? "bg-purple-600 hover:bg-purple-700"
-                        : "bg-purple-500 hover:bg-purple-600"
-                    } text-white font-medium shadow-lg transition-transform flex items-center justify-center space-x-2`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {loading ? (
-                      <svg
-                        className="animate-spin h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                    ) : (
-                      <span>Regenerate Cover Letter</span>
-                    )}
-                  </motion.button>
                 </div>
               </motion.div>
             </motion.div>
@@ -622,6 +787,43 @@ const ResumeImprovePage = () => {
                         : "bg-gray-100 text-black border-gray-300"
                     }`}
                   />
+
+                  <motion.button
+                    onClick={regenerateCoverLetter}
+                    disabled={loading}
+                    className={`px-6 py-3 rounded-full w-full ${
+                      darkMode
+                        ? "bg-purple-600 hover:bg-purple-700"
+                        : "bg-purple-500 hover:bg-purple-600"
+                    } text-white font-medium shadow-lg transition-transform flex items-center justify-center space-x-2`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {loadingCoverLetter ? (
+                      <svg
+                        className="animate-spin h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                    ) : (
+                      <span>Regenerate Cover Letter</span>
+                    )}
+                  </motion.button>
                 </motion.div>
               </motion.div>
             </motion.div>
