@@ -2,29 +2,28 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-const VITE_OPENAI_API_KEY = import.meta.env.VITE_API_URL;
-const VITE_JSEARCH_API_KEY = import.meta.env.VITE_API_URL;
 
 // Make sure this path matches your actual directory structure
 // You may need to adjust this path based on your file organization
 import ResumeUploadArea from "../components/ResumeUploadArea";
 
-const OPENAI_API_KEY = `${VITE_OPENAI_API_KEY}`;
-const JSEARCH_API_KEY = `${VITE_JSEARCH_API_KEY}`;
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+const JSEARCH_API_KEY = import.meta.env.VITE_JSEARCH_API_KEY;
 
 const CuratedJobsPage = () => {
-  // Modify darkMode state initialization to use localStorage
-  const [darkMode, setDarkMode] = useState(() => {
-    // Check localStorage for theme preference, default to light mode if not set
-    const savedTheme = localStorage.getItem("theme");
-    return savedTheme === "dark";
-  });
+  // Update dark mode state to use localStorage
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("theme") === "dark" ? true : false
+  );
 
-  // Add useEffect to update localStorage whenever darkMode changes
+  // Add this useEffect to persist dark mode changes
   useEffect(() => {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
+    // Apply dark class to HTML element for Tailwind
+    document.documentElement.classList.toggle("dark", darkMode);
   }, [darkMode]);
 
+  // Your existing states...
   const [keywords, setKeywords] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);

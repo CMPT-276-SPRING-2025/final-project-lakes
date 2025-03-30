@@ -8,6 +8,8 @@ import ResumeUploadArea from "../components/ResumeUploadArea";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+
 // Logos (adjust paths as needed)
 import AmazonLogo from "../../Images/Amazon.png";
 import FacebookLogo from "../../Images/facebook.png";
@@ -177,7 +179,7 @@ function InterviewProcessPage() {
           headers: {
             "Content-Type": "application/json",
             // Replace with your actual key (ideally from environment variable):
-            Authorization: `Bearer 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`,
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
           },
           body: JSON.stringify({
             model: "gpt-4",

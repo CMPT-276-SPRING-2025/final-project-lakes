@@ -145,7 +145,8 @@ const jobResults_sample = [
 ];
 
 // API configuration (unchanged)
-const API_KEY = "9e4811e9f4msh79dc0327c602ff2p109aa4jsn6cee4b28e7fc";
+const API_KEY = import.meta.env.VITE_JSEARCH_API_KEY;
+
 const options = {
   method: "GET",
   headers: {
@@ -163,6 +164,42 @@ const cardVariants = {
     transition: { type: "spring", stiffness: 100, damping: 15 },
   },
 };
+function shortenJobDescription(description) {
+  if (!description) return "";
+
+  // Clean up the description
+  const cleaned = description
+    .replace(/(Job Description:|Responsibilities:|Requirements:)/gi, "")
+    .replace(/\n/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Attempt to split by sentence
+  const sentences = cleaned.split(/(?<=[.?!])\s+/); // keeps punctuation
+
+  let summary = "";
+  for (let sentence of sentences) {
+    if ((summary + " " + sentence).split(" ").length <= 40) {
+      summary += (summary ? " " : "") + sentence;
+    } else {
+      break;
+    }
+  }
+
+  // If no punctuation or sentence was too long, fallback to word slice
+  if (!summary) {
+    const words = cleaned.split(" ");
+    summary = words.slice(0, 40).join(" ") + (words.length > 40 ? "..." : "");
+  } else if (
+    !summary.endsWith(".") &&
+    !summary.endsWith("!") &&
+    !summary.endsWith("?")
+  ) {
+    summary += "...";
+  }
+
+  return summary;
+}
 
 const JobSearchPage = () => {
   const navigate = useNavigate();
@@ -238,6 +275,7 @@ const JobSearchPage = () => {
         const url = `https://jsearch.p.rapidapi.com/search?query=${searchQuery}%20jobs%20in%20${filters.location}&page=1&num_pages=1&country=us&date_posted=all`;
         const response = await fetch(url, options);
         const result = await response.json();
+        console.log(result.data);
         setJobResults(result.data || []);
       } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -247,7 +285,7 @@ const JobSearchPage = () => {
     };
 
     // Uncomment to enable API fetch
-    // fetchJobs();
+    fetchJobs();
 
     // For now, using sample data
     setLoading(false);
@@ -261,8 +299,8 @@ const JobSearchPage = () => {
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
   // When API is enabled, this would paginate jobResults
   // For now, paginate the sample data
-  const currentJobs = jobResults_sample.slice(indexOfFirstJob, indexOfLastJob);
-  const totalPages = Math.ceil(jobResults_sample.length / jobsPerPage);
+  const currentJobs = jobResults.slice(indexOfFirstJob, indexOfLastJob);
+  const totalPages = Math.ceil(jobResults.length / jobsPerPage);
 
   // Change page functions
   const goToNextPage = () => {
@@ -520,7 +558,7 @@ const JobSearchPage = () => {
               Loading opportunities...
             </p>
           </motion.div>
-        ) : jobResults_sample.length > 0 ? (
+        ) : jobResults.length > 0 ? (
           <AnimatePresence>
             {currentJobs.map((job, index) => (
               <motion.div
@@ -562,24 +600,14 @@ const JobSearchPage = () => {
                           darkMode ? "text-gray-300" : "text-gray-700"
                         }`}
                       >
-                        ${job.salary}
+                        {job.job_employment_type}
                       </p>
                       <div
                         className={`mb-4 ${
                           darkMode ? "text-gray-300" : "text-gray-700"
                         }`}
                       >
-                        {expanded[job.job_id]
-                          ? job.description
-                          : truncateText(job.description, 20)}
-                        <button
-                          onClick={() => toggleDescription(job.job_id)}
-                          className={`ml-2 font-medium ${
-                            darkMode ? "text-purple-400" : "text-purple-600"
-                          } hover:underline focus:outline-none`}
-                        >
-                          {expanded[job.job_id] ? "Read Less" : "Read More"}
-                        </button>
+                        {shortenJobDescription(job.job_description)}
                       </div>
                     </div>
                     <div className="md:self-center">
@@ -640,7 +668,7 @@ const JobSearchPage = () => {
         )}
 
         {/* Pagination */}
-        {jobResults_sample.length > jobsPerPage && (
+        {jobResults.length > jobsPerPage && (
           <motion.div
             className="flex justify-center mt-8 gap-4"
             initial={{ opacity: 0, y: 20 }}
