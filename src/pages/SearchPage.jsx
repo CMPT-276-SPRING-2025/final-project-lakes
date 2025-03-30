@@ -272,7 +272,7 @@ const JobSearchPage = () => {
       setLoading(true);
       try {
         const searchQuery = filters.company || "software developer"; // Default query
-        const url = `https://jsearch.p.rapidapi.com/search?query=${searchQuery}%20jobs%20in%20${filters.location}&page=1&num_pages=1&country=us&date_posted=all`;
+        const url = `https://jsearch.p.rapidapi.com/search?query=${searchQuery}%20jobs%20in%20${filters.location}&page=1&num_pages=2&country=us&date_posted=all`;
         const response = await fetch(url, options);
         const result = await response.json();
         console.log(result.data);
@@ -474,18 +474,7 @@ const JobSearchPage = () => {
                       : "bg-gray-100 text-black border-gray-200"
                   }`}
                 />
-                <input
-                  type="number"
-                  name="salary"
-                  value={filters.salary}
-                  onChange={handleFilterChange}
-                  placeholder="Min Salary..."
-                  className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent ${
-                    darkMode
-                      ? "bg-gray-700 text-white border-gray-600"
-                      : "bg-gray-100 text-black border-gray-200"
-                  }`}
-                />
+
                 <input
                   type="text"
                   name="company"
