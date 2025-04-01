@@ -221,6 +221,8 @@ const JobSearchPage = () => {
     salary: "",
     company: "",
   });
+  // Add debounced filters state
+  const [debouncedFilters, setDebouncedFilters] = useState(filters);
   const [jobResults, setJobResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -266,13 +268,24 @@ const JobSearchPage = () => {
     navigate("/interview-process", { state: { job } });
   };
 
-  // Fetch jobs when filters change
+  // Debounce the filter changes
+  useEffect(() => {
+    // Set a timer to update debouncedFilters after 500ms of no changes
+    const timer = setTimeout(() => {
+      setDebouncedFilters(filters);
+    }, 500); // 500ms debounce time
+
+    // Clean up the timer if filters change before timeout
+    return () => clearTimeout(timer);
+  }, [filters]);
+
+  // Fetch jobs when debouncedFilters change, not on every keystroke
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
       try {
-        const searchQuery = filters.company || "software developer"; // Default query
-        const url = `https://jsearch.p.rapidapi.com/search?query=${searchQuery}%20jobs%20in%20${filters.location}&page=1&num_pages=2&country=us&date_posted=all`;
+        const searchQuery = debouncedFilters.company || "software developer"; // Default query
+        const url = `https://jsearch.p.rapidapi.com/search?query=${searchQuery}%20jobs%20in%20${debouncedFilters.location}&page=1&num_pages=2&country=us&date_posted=all`;
         const response = await fetch(url, options);
         const result = await response.json();
         console.log(result.data);
@@ -287,12 +300,9 @@ const JobSearchPage = () => {
     // Uncomment to enable API fetch
     fetchJobs();
 
-    // For now, using sample data
-    setLoading(false);
-
     // Reset to first page when filters change
     setCurrentPage(1);
-  }, [filters]);
+  }, [debouncedFilters]); // This only runs when debouncedFilters change, not on every keystroke
 
   // Get current jobs for pagination
   const indexOfLastJob = currentPage * jobsPerPage;
