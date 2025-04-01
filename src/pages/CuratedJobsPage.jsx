@@ -435,8 +435,8 @@ const CuratedJobsPage = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.8 }}
                 >
-                  No sign down required. Your data is only used to match you
-                  with relevant jobs.
+                  No sign up required. Your data is only used to match you with
+                  relevant jobs.
                 </motion.p>
               </div>
             </motion.div>
