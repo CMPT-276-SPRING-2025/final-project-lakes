@@ -5,6 +5,7 @@ import ResumeButton from "../components/ResumeUploadArea.jsx";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+const openAiKey = import.meta.env.VITE_OPENAI_API_KEY;
 // Variants for card animations
 const cardVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -73,7 +74,7 @@ const MatchAnalysisPage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer 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`,
+            Authorization: `Bearer ${openAiKey}`,
           },
           body: JSON.stringify({
             model: "gpt-4",
