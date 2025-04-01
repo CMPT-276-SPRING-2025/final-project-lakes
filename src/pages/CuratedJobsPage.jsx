@@ -343,8 +343,8 @@ const CuratedJobsPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
           >
-            Upload your resume and let our AI find the best job matches for your
-            skills and experience.
+            Upload your not so good resume and let our AI find the best job
+            matches for your skills and experience.
           </motion.p>
         </motion.div>
 
