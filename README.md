@@ -1,93 +1,71 @@
-# 🧠 ResuMate
+<div align="center">
 
-ResuMate is a smart resume and job application assistant that leverages AI and job market APIs to help users optimize their resumes, find relevant job listings, and generate tailored cover letters.
+# 🤖 ResuMate
 
----
+### AI-powered resume analyzer, job matcher, and cover letter generator — all in one smart app.
 
-## 🚀 Project Links
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-00C897?style=for-the-badge&logo=vercel&logoColor=white)](https://resumate.vercel.app)
 
-- **Live Website:** [https://resumate.vercel.app](https://resumate.vercel.app)
-- **Demo Video:** [Link to Demo Video](#) <!-- Replace with actual link -->
-- **Project Report:** [Link to Final Report](#) <!-- Replace with actual link -->
-- **Sprint Video/Docs:** [Link to Sprint Documents/Videos](#) <!-- Replace with actual link -->
+![](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![](https://img.shields.io/badge/OpenAI_API-412991?style=for-the-badge&logo=openai&logoColor=white)
+![](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
----
+</div>
 
-## 🛠️ Tech Stack
+<div align="center">
+  <img src="public/screenshots/homepage.png" width="49%" />
+  <img src="public/screenshots/coverletter.png" width="49%" /> 
+</div>
 
-- **Frontend:** React, TailwindCSS
-- **Backend/API:** Next.js API Routes
-- **Deployment:** Vercel
-- **APIs Used:** 
-  - OpenAI (for resume analysis and cover letter generation)
-  - JSearch API
-  - Indeed API
-  - Glassdoor API
-
----
-
-## 🧩 Features
-
-- Upload a resume (PDF)
-- Analyze resume content using OpenAI
-- Get matched with relevant job postings
-- Generate tailored cover letters
-- Modern, responsive UI
+<div align="center">
+  <img src="public/gifs/resumate_demo.gif" width="70%" alt="Demo walkthrough" />
+</div>
 
 ---
 
-## 🧪 Local Setup Instructions
+## 💻 Live Demo
 
-Follow these steps to deploy ResuMate on your local machine:
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/your-username/resumate.git
-cd resumate# 🧠 ResuMate
-
-ResuMate is a smart resume and job application assistant that leverages AI and job market APIs to help users optimize their resumes, find relevant job listings, and generate tailored cover letters.
+[resumate.vercel.app](https://resumate.vercel.app)
 
 ---
 
-## 🚀 Project Links
+## ✨ Features
 
-- **Live Website:** [https://resumate.vercel.app](https://resumate.vercel.app)
-- **Demo Video:** [Link to Demo Video](#) <!-- Replace with actual link -->
-- **Project Report:** [Link to Final Report](#) <!-- Replace with actual link -->
-- **Sprint Video/Docs:** [Link to Sprint Documents/Videos](#) <!-- Replace with actual link -->
-
----
-
-## 🛠️ Tech Stack
-
-- **Frontend:** React, TailwindCSS
-- **Backend/API:** Next.js API Routes
-- **Deployment:** Vercel
-- **APIs Used:** 
-  - OpenAI (for resume analysis and cover letter generation)
-  - JSearch API
-  - Indeed API
-  - Glassdoor API
+- 📄 Upload and analyze your resume using OpenAI
+- 🔍 Get AI-powered job matches using multiple APIs (JSearch, Indeed, Glassdoor)
+- 📝 Generate tailored, high-quality cover letters instantly
+- 🖥️ Responsive UI with modern design
+- ⚙️ Continuous deployment with Vercel
 
 ---
 
-## 🧩 Features
+## 🛠 Tech Stack
 
-- Upload a resume (PDF)
-- Analyze resume content using OpenAI
-- Get matched with relevant job postings
-- Generate tailored cover letters
-- Modern, responsive UI
+| Component         | Technology                         |
+|------------------|------------------------------------|
+| Framework        | Next.js (React)                    |
+| Styling          | Tailwind CSS                       |
+| Deployment       | Vercel                             |
+| AI Integration   | OpenAI API                         |
+| Job APIs         | JSearch, Indeed, Glassdoor         |
+| File Handling    | PDF Parsing with `pdf-parse`       |
+| Hosting          | Vercel                             |
 
 ---
 
-## 🧪 Local Setup Instructions
+## 🖥 Local Setup
 
-Follow these steps to deploy ResuMate on your local machine:
+### Prerequisites
 
-### 1. Clone the Repository
+- Node.js ≥18.x
+- npm
+- Vercel CLI (optional)
 
-```bash
-git clone https://github.com/your-username/resumate.git
-cd resumate
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/resumate.git
+   cd resumate
