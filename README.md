@@ -73,28 +73,34 @@
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/your-username/resumate.git
    cd resumate
    ```
 2. **Install dependencies**
+
     ```bash
    npm install
    ```
 3. **Create .env.local**
+
     ```bash
    touch .env.local
    ```
 4. **Add your API keys**
+
     ```bash
    OPENAI_API_KEY=your_openai_api_key
     JSEARCH_API_KEY=your_jsearch_api_key
    ```
 5. **Run the app**
+
     ```bash
    npm run dev
    ```
 6. **Visit the local site**
+
     ```bash
    http://localhost:3000
    ```
