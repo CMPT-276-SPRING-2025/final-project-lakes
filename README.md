@@ -6,8 +6,8 @@
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-00C897?style=for-the-badge&logo=vercel&logoColor=white)](https://resumate.vercel.app)
 
-![](https://img.shields.io/github/stars/your-username/resumate?style=for-the-badge)
-![](https://img.shields.io/github/forks/your-username/resumate?style=for-the-badge)
+![](https://img.shields.io/github/stars/CMPT-276-SPRING-2025/resumate?style=for-the-badge)
+![](https://img.shields.io/github/forks/final-project-lakes/resumate?style=for-the-badge)
 ![](https://img.shields.io/github/issues/your-username/resumate?style=for-the-badge)
 ![](https://img.shields.io/github/last-commit/your-username/resumate?style=for-the-badge)
 
