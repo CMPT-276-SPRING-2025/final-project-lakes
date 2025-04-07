@@ -21,6 +21,8 @@ const MatchAnalysisPage = () => {
   const navigate = useNavigate();
   const job = location.state ? location.state.job : undefined;
 
+  //const [job, setjob] = useState(location.state ? location.state.job : undefined);
+
   // Instead of "theme", use a boolean darkMode for consistency
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark" ? true : false
@@ -37,7 +39,7 @@ const MatchAnalysisPage = () => {
     title: job ? `${job.job_title}` : "",
     company: job ? `${job.employer_name}` : "",
     location: job ? `${job.job_city}` : "",
-    description: job ? `${job.description}` : "",
+    description: job ? `${job.job_description}` : "",
   });
   const [resumeText, setResumeText] = useState("");
   const [matchRating, setMatchRating] = useState(null);
