@@ -27,7 +27,7 @@ const Navbar = ({ darkMode, setDarkMode }) => {
     { label: "Search Postings", path: "/search" },
     { label: "Jobs For You", path: "/curated-jobs" },
     { label: "Check Match", path: "/match-check" },
-    { label: "Improve Resume", path: "/resume-improve" },
+    { label: "Improve Documents", path: "/resume-improve" },
   ];
 
   // Animation variants

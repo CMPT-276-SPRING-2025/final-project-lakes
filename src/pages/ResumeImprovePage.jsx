@@ -407,7 +407,7 @@ const ResumeImprovePage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            Improve Resume
+            Improve Resume And Cover Letter
           </motion.h1>
           <motion.p
             className={`text-xl ${

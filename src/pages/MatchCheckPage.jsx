@@ -63,7 +63,9 @@ const MatchAnalysisPage = () => {
   };
 
   const analyzeResumeMatch = async () => {
-    if (!resumeText.trim() || !jobDetails.description.trim()) {
+    const isText = localStorage.getItem("resumeText");
+
+    if (!isText.trim() || !jobDetails.description.trim()) {
       alert("Please upload a resume and enter a job description.");
       return;
     }
@@ -89,36 +91,36 @@ const MatchAnalysisPage = () => {
               {
                 role: "user",
                 content: `
-**Evaluate the resume against the job description.**
+  **Evaluate the resume against the job description.**
 
-**Resume:**
-${resumeText}
+  **Resume:**
+  ${isText}
 
-**Job Description:**
-${jobDetails.description}
+  **Job Description:**
+  ${jobDetails.description}
 
-**Requirements:**
-- Provide a match percentage (0-100%).
-- List exactly **3 strengths**.
-- List exactly **3 weaknesses**.
-- List exactly **3 suggestions** for improvement.
+  **Requirements:**
+  - Provide a match percentage (0-100%).
+  - List exactly **3 strengths**.
+  - List exactly **3 weaknesses**.
+  - List exactly **3 suggestions** for improvement.
 
-**Output Format:**
-**Match Rating:** <Match Score>%
-**Strengths:**
-1. <Strength 1>
-2. <Strength 2>
-3. <Strength 3>
+  **Output Format:**
+  **Match Rating:** <Match Score>%
+    **Strengths:**
+    1. <Strength 1>
+    2. <Strength 2>
+    3. <Strength 3>
 
-**Weaknesses:**
-1. <Weakness 1>
-2. <Weakness 2>
-3. <Weakness 3>
+    **Weaknesses:**
+    1. <Weakness 1>
+    2. <Weakness 2>
+    3. <Weakness 3>
 
-**Suggested Improvements:**
-1. <Suggestion 1>
-2. <Suggestion 2>
-3. <Suggestion 3>
+    **Suggested Improvements:**
+    1. <Suggestion 1>
+    2. <Suggestion 2>
+    3. <Suggestion 3>
             `,
               },
             ],
