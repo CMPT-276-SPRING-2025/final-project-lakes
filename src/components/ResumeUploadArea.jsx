@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist";
-import { motion } from "framer-motion";
+import { motion} from "framer-motion";
 import { Upload, CheckCircle, RefreshCw } from "lucide-react";
 
 // Dynamically set the worker path
@@ -41,7 +41,7 @@ const ResumeUploadArea = ({ onResumeParsed, darkMode = false }) => {
               .join(" ");
           }
 
-          console.log("Extracted PDF Text:", extractedText);
+          
           setFileName(file.name);
           setResumeUploaded(true);
           onResumeParsed(extractedText, file.name);

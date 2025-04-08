@@ -87,7 +87,7 @@ const ResumeImprovePage = () => {
     setUploadedFileName(fileName);
     localStorage.setItem("resumeText", extractedText);
     localStorage.setItem("uploadedFileName", fileName);
-    console.log("Extracted Resume Text:", extractedText);
+    
   };
 
   const generateResumeAndCoverLetter = async () => {

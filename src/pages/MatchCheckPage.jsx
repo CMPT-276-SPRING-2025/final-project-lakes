@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import {  motion, AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import ResumeButton from "../components/ResumeUploadArea.jsx";
 import Navbar from "../components/Navbar";
@@ -59,7 +59,7 @@ const MatchAnalysisPage = () => {
     setUploadedFileName(fileName);
     localStorage.setItem("resumeText", extractedText);
     localStorage.setItem("uploadedFileName", fileName);
-    console.log("Extracted Resume Text:", extractedText);
+    
   };
 
   const analyzeResumeMatch = async () => {

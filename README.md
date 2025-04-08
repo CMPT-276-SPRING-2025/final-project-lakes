@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🤖 ResuMate 🤖
+# 🤖 ResuMate nope 🤖
 
 ### AI-powered resume analyzer, job matcher, and cover letter generator — all in one smart app.
 
