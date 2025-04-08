@@ -74,12 +74,7 @@ const CuratedJobsPage = () => {
   }, []);
 
   // Callback function to handle parsed resume text
-<<<<<<< HEAD
   const handleResumeParsed = async (text, fileName) => {
-=======
-  const handleResumeParsed = async (text) => {
-    
->>>>>>> 63da993d401fa1cf1c94b59317d866ff0341463c
     setLoading(true);
 
     try {
@@ -98,11 +93,6 @@ const CuratedJobsPage = () => {
   };
 
   const extractKeywordsFromResume = async (resumeText) => {
-<<<<<<< HEAD
-=======
-    
-
->>>>>>> 63da993d401fa1cf1c94b59317d866ff0341463c
     try {
       // Call OpenAI API to extract keywords
       const response = await fetch(
@@ -150,11 +140,6 @@ const CuratedJobsPage = () => {
         .map((keyword) => keyword.trim())
         .filter((keyword) => keyword);
 
-<<<<<<< HEAD
-=======
-    
-
->>>>>>> 63da993d401fa1cf1c94b59317d866ff0341463c
       // Ensure we have exactly two keywords
       if (keywords.length !== 2) {
         throw new Error("Didn't receive exactly two keywords");
@@ -168,11 +153,6 @@ const CuratedJobsPage = () => {
   };
 
   const fetchJobsUsingKeywords = async (keywords) => {
-<<<<<<< HEAD
-=======
-   
-
->>>>>>> 63da993d401fa1cf1c94b59317d866ff0341463c
     if (keywords.length !== 2) {
       console.error("Expected exactly 2 keywords (country and role)");
       return [];
@@ -209,10 +189,6 @@ const CuratedJobsPage = () => {
       }
 
       const data = await response.json();
-<<<<<<< HEAD
-=======
-      
->>>>>>> 63da993d401fa1cf1c94b59317d866ff0341463c
 
       return data.data || [];
     } catch (error) {
