@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🤖 ResuMate nope 🤖
+# 🤖 ResuMate 🤖
 
 ### AI-powered resume analyzer, job matcher, and cover letter generator — all in one smart app.
 
@@ -21,8 +21,8 @@
 </div>
 
 <div align="center">
-  <img src="Images/screenshots/Homepage.png" width="49%" />
-  <img src="Images/screenshots/Homepage1.png" width="49%" /> 
+  <img src="Images/Homepage.png" width="49%" />
+  <img src="Images/Homepage1.png" width="49%" /> 
 </div>
 
 <div align="center">
