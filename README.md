@@ -12,7 +12,6 @@
 ![](https://img.shields.io/github/last-commit/CMPT-276-SPRING-2025/final-project-lakes?style=for-the-badge)
 
 ![](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
 ![](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
 ![](https://img.shields.io/badge/Shadcn--UI-000000?style=for-the-badge)
@@ -22,8 +21,8 @@
 </div>
 
 <div align="center">
-  <img src="public/screenshots/homepage.png" width="49%" />
-  <img src="public/screenshots/coverletter.png" width="49%" /> 
+  <img src="Images/screenshots/Homepage.png" width="49%" />
+  <img src="Images/screenshots/Homepage1.png" width="49%" /> 
 </div>
 
 <div align="center">
