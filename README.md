@@ -22,7 +22,7 @@
 
 <div align="center">
   <img src="Images/Homepage.png" width="49%" />
-  <img src="Images/Homepage1.png" width="49%" /> 
+  <img src="Images/HomePage1.png" width="49%" /> 
 </div>
 
 <div align="center">
@@ -33,7 +33,7 @@
 
 ## 💻 Live Demo
 
-[resumate.vercel.app](https://resumate.vercel.app)
+[resumate.vercel.app](https://final-project-lakes.vercel.app/)
 
 ---
 
