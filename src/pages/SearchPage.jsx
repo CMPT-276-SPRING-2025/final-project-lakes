@@ -288,7 +288,7 @@ const JobSearchPage = () => {
         const url = `https://jsearch.p.rapidapi.com/search?query=${searchQuery}%20jobs%20in%20${debouncedFilters.location}&page=1&num_pages=2&country=us&date_posted=all`;
         const response = await fetch(url, options);
         const result = await response.json();
-        console.log(result.data);
+
         setJobResults(result.data || []);
       } catch (error) {
         console.error("Error fetching jobs:", error);

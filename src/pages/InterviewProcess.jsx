@@ -104,9 +104,7 @@ function InterviewProcessPage() {
   const jobDescription = job.description || defaultDescription;
 
   // Log job data received from search page (for debugging)
-  useEffect(() => {
-    console.log("Job data received:", job);
-  }, [job]);
+  useEffect(() => {}, [job]);
 
   const [behavioralQuestions, setBehavioralQuestions] = useState("");
   const [loading, setLoading] = useState(false);

@@ -221,6 +221,7 @@ const ImagesContainer = styled.div`
   }
 `;
 
+// Removed the darkMode prop from the styled img components
 const ImageTop = styled.img`
   position: absolute;
   top: 0px;
@@ -491,17 +492,17 @@ export default function HomePage() {
                 <ImageTop
                   src={resumeImage1}
                   alt="Resume Template 1"
-                  darkMode={darkMode}
+                  // Removed darkMode prop
                 />
                 <ImageMiddle
                   src={resumeImage2}
                   alt="Resume Template 2"
-                  darkMode={darkMode}
+                  // Removed darkMode prop
                 />
                 <ImageBottom
                   src={resumeImage3}
                   alt="Resume Template 3"
-                  darkMode={darkMode}
+                  // Removed darkMode prop
                 />
               </ImagesContainer>
             </div>
@@ -616,17 +617,17 @@ export default function HomePage() {
               <ImageTop
                 src={resumeImage1}
                 alt="Resume Template 1"
-                darkMode={darkMode}
+                // Removed darkMode prop
               />
               <ImageMiddle
                 src={resumeImage2}
                 alt="Resume Template 2"
-                darkMode={darkMode}
+                // Removed darkMode prop
               />
               <ImageBottom
                 src={resumeImage3}
                 alt="Resume Template 3"
-                darkMode={darkMode}
+                // Removed darkMode prop
               />
             </ImagesContainer>
           </div>

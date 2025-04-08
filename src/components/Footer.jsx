@@ -69,7 +69,7 @@ const Footer = ({ darkMode }) => {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            Privacy Policy
+            Built by Alexander, Manan, Khalid and Mohammad
           </motion.a>
           <motion.a
             href="#"
@@ -81,7 +81,7 @@ const Footer = ({ darkMode }) => {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            Terms of Service
+            © 2025 ResuMate. All rights reserved
           </motion.a>
           <motion.a
             href="#"
@@ -92,9 +92,7 @@ const Footer = ({ darkMode }) => {
             }`}
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            Contact Us
-          </motion.a>
+          ></motion.a>
         </motion.div>
       </div>
     </footer>

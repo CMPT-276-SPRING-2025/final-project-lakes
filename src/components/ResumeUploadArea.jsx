@@ -41,7 +41,6 @@ const ResumeUploadArea = ({ onResumeParsed, darkMode = false }) => {
               .join(" ");
           }
 
-          console.log("Extracted PDF Text:", extractedText);
           setFileName(file.name);
           setResumeUploaded(true);
           onResumeParsed(extractedText, file.name);

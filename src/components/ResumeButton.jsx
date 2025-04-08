@@ -19,7 +19,6 @@ const ResumeButton = ({ onResumeParsed }) => {
 
         // Store in window for access in event handlers
         window.pdfjsLib = pdfjsLib;
-        console.log("PDF.js loaded successfully");
       } catch (error) {
         console.error("Failed to load PDF.js:", error);
         setErrorMessage(
@@ -71,8 +70,6 @@ const ResumeButton = ({ onResumeParsed }) => {
                 .map((item) => item.str)
                 .join(" ");
             }
-
-            console.log("Successfully extracted text from PDF");
 
             // Check if we got enough text to analyze
             if (extractedText.length < 100) {
