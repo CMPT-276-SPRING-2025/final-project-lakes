@@ -1,16 +1,23 @@
 <div align="center">
 
-# 🤖 ResuMate
+# 🤖 ResuMate nope 🤖
 
 ### AI-powered resume analyzer, job matcher, and cover letter generator — all in one smart app.
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-00C897?style=for-the-badge&logo=vercel&logoColor=white)](https://resumate.vercel.app)
 
+![](https://img.shields.io/github/stars/CMPT-276-SPRING-2025/final-project-lakes?style=for-the-badge)
+![](https://img.shields.io/github/forks/CMPT-276-SPRING-2025/final-project-lakes?style=for-the-badge)
+![](https://img.shields.io/github/issues/CMPT-276-SPRING-2025/final-project-lakes?style=for-the-badge)
+![](https://img.shields.io/github/last-commit/CMPT-276-SPRING-2025/final-project-lakes?style=for-the-badge)
+
 ![](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
-![](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
+![](https://img.shields.io/badge/Shadcn--UI-000000?style=for-the-badge)
 ![](https://img.shields.io/badge/OpenAI_API-412991?style=for-the-badge&logo=openai&logoColor=white)
-![](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![](https://img.shields.io/badge/JSearch_API-000000?style=for-the-badge)
 
 </div>
 
@@ -66,6 +73,39 @@
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/your-username/resumate.git
    cd resumate
+   ```
+2. **Install dependencies**
+
+    ```bash
+   npm install
+   ```
+3. **Create .env.local**
+
+    ```bash
+   touch .env.local
+   ```
+4. **Add your API keys**
+
+    ```bash
+   OPENAI_API_KEY=your_openai_api_key
+    JSEARCH_API_KEY=your_jsearch_api_key
+   ```
+5. **Run the app**
+
+    ```bash
+   npm run dev
+   ```
+6. **Visit the local site**
+
+    ```bash
+   http://localhost:3000
+   ```
+
+
+
+
+

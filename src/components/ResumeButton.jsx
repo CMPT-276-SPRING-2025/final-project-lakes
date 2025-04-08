@@ -19,6 +19,10 @@ const ResumeButton = ({ onResumeParsed }) => {
 
         // Store in window for access in event handlers
         window.pdfjsLib = pdfjsLib;
+<<<<<<< HEAD
+=======
+       
+>>>>>>> 63da993d401fa1cf1c94b59317d866ff0341463c
       } catch (error) {
         console.error("Failed to load PDF.js:", error);
         setErrorMessage(
