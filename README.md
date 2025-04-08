@@ -4,7 +4,7 @@
 
 ### AI-powered resume analyzer, job matcher, and cover letter generator — all in one smart app.
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-00C897?style=for-the-badge&logo=vercel&logoColor=white)](https://final-project-lakes.vercel.app)
+[![Website Link](https://img.shields.io/badge/🚀_Live_Demo-00C897?style=for-the-badge&logo=vercel&logoColor=white)](https://final-project-lakes.vercel.app)
 
 ![](https://img.shields.io/github/stars/CMPT-276-SPRING-2025/final-project-lakes?style=for-the-badge)
 ![](https://img.shields.io/github/forks/CMPT-276-SPRING-2025/final-project-lakes?style=for-the-badge)
@@ -40,7 +40,7 @@
 ## ✨ Features
 
 - 📄 Upload and analyze your resume using OpenAI
-- 🔍 Get AI-powered job matches using multiple APIs (JSearch, Indeed, Glassdoor)
+- 🔍 Get AI-powered job matches using multiple APIs ( OpenAI, JSearch )
 - 📝 Generate tailored, high-quality cover letters instantly
 - 🖥️ Responsive UI with modern design
 - ⚙️ Continuous deployment with Vercel
@@ -51,11 +51,11 @@
 
 | Component         | Technology                         |
 |------------------|------------------------------------|
-| Framework        | Next.js (React)                    |
+| Framework        | React                              |
 | Styling          | Tailwind CSS                       |
 | Deployment       | Vercel                             |
 | AI Integration   | OpenAI API                         |
-| Job APIs         | JSearch, Indeed, Glassdoor         |
+| Job APIs         | JSearch                            |
 | File Handling    | PDF Parsing with `pdf-parse`       |
 | Hosting          | Vercel                             |
 
@@ -67,14 +67,13 @@
 
 - Node.js ≥18.x
 - npm
-- Vercel CLI (optional)
 
 ### Installation
 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/your-username/resumate.git
+   git clone https://github.com/CMPT-276-SPRING-2025/final-project-lakes.git
    cd resumate
    ```
 2. **Install dependencies**
@@ -82,10 +81,10 @@
     ```bash
    npm install
    ```
-3. **Create .env.local**
+3. **Create .env**
 
     ```bash
-   touch .env.local
+   touch .env
    ```
 4. **Add your API keys**
 
@@ -93,12 +92,20 @@
    OPENAI_API_KEY=your_openai_api_key
     JSEARCH_API_KEY=your_jsearch_api_key
    ```
-5. **Run the app**
+
+5. **Ignore .gitignore**
+
+    ```bash
+   echo ".env" >> .gitignore
+   ```
+   
+6. **Run the app**
 
     ```bash
    npm run dev
    ```
-6. **Visit the local site**
+
+7. **Visit the local site**
 
     ```bash
    http://localhost:3000
