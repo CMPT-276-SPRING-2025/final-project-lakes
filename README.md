@@ -4,7 +4,7 @@
 
 ### AI-powered resume analyzer, job matcher, and cover letter generator — all in one smart app.
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-00C897?style=for-the-badge&logo=vercel&logoColor=white)](https://resumate.vercel.app)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-00C897?style=for-the-badge&logo=vercel&logoColor=white)](https://final-project-lakes.vercel.app)
 
 ![](https://img.shields.io/github/stars/CMPT-276-SPRING-2025/final-project-lakes?style=for-the-badge)
 ![](https://img.shields.io/github/forks/CMPT-276-SPRING-2025/final-project-lakes?style=for-the-badge)
